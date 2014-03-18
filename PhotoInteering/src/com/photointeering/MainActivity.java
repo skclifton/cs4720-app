@@ -59,7 +59,14 @@ public class MainActivity extends FragmentActivity implements
 			mCurrentLocation = mLocationClient.getLastLocation();
 			double lat = mCurrentLocation.getLatitude();
 			double lon = mCurrentLocation.getLongitude();
+			
+			Intent intent = new Intent(MainActivity.this, GameMapActivity.class);
+			intent.putExtra("lat", lat);
+			intent.putExtra("lon", lon);
+			
 			Log.d("tag", "click! " + lat + " " + lon);
+			
+			startActivity(intent);
 		}
 		
 	};
@@ -70,27 +77,8 @@ public class MainActivity extends FragmentActivity implements
 			mLocationClient.connect();
 		}
 	}
-	
 
-//	public OnClickListener getGameMapActivityListener = new OnClickListener() {
-//
-//		public void onClick(View v) {
-//			// An intent is an object that can be used to start another activity
-//			Intent intent = new Intent(MainActivity.this, GameMapActivity.class);
-//
-//			Location coords = mLocationClient.getLastLocation();
-//
-//			// Add the GPS coordinates to the intent
-//			intent.putExtra("lat", coords.getLatitude());
-//			intent.putExtra("lon", coords.getLongitude());
-//
-//			startActivity(intent);
-//		}
-//
-//	};
-
-//	// Everything involved with getting the current location
-//
+	// Everything involved with getting the current location
 	private final static int CONNECTION_FAILURE_RESOLUTION_REQUEST = 9000;
 
 	public static class ErrorDialogFragment extends DialogFragment {
