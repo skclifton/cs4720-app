@@ -12,6 +12,7 @@ import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.params.BasicHttpParams;
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -90,23 +91,11 @@ public class GameMapActivity extends Activity {
 			String result = null;
 
 			try {
-				Log.d("url1", url);
-
 				HttpResponse response = httpclient.execute(httppost);
-				Log.d("url2", url);
-
 				HttpEntity entity = response.getEntity();
-				Log.d("url3", url);
-
-
 				inputStream = entity.getContent();
-				Log.d("url4", url);
-
 				BufferedReader reader = new BufferedReader(
 						new InputStreamReader(inputStream, "UTF-8"), 8);
-				
-				Log.d("url5", url);
-
 				StringBuilder sb = new StringBuilder();
 
 				String line = null;
@@ -124,20 +113,36 @@ public class GameMapActivity extends Activity {
 				}
 			}
 
-			JSONObject jObject;
-			String photoURL = null;
-			String photoLat = "0.0";
-			String photoLon = "0.0";
+			JSONArray jArray = null;
 			try {
-				jObject = new JSONObject(result);
-				photoURL = jObject.getString("url");
-				photoLat = jObject.getString("lat");
-				photoLon = jObject.getString("lon");
-			} catch (JSONException e) {
-				e.printStackTrace();
+				jArray = new JSONArray(result);
+			} catch (JSONException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
 			}
 
-			insertPhotoInScrollView(photoURL, photoLat, photoLon);
+			if (jArray != null) {
+				for (int i = 0; i < jArray.length(); i++) {
+					JSONObject jObject;
+					String photoURL = null;
+					String photoLat = "0.0";
+					String photoLon = "0.0";
+					try {
+						jObject = jArray.getJSONObject(i);
+						photoURL = jObject.getString("url");
+						Log.d("photoURL " + Integer.toString(i), photoURL);
+						photoLat = jObject.getString("lat");
+						Log.d("photoLat " + Integer.toString(i), photoLat);
+						photoLon = jObject.getString("lon");
+						Log.d("photoLon " + Integer.toString(i), photoLon);
+
+					} catch (JSONException e) {
+						e.printStackTrace();
+					}
+
+					insertPhotoInScrollView(photoURL, photoLat, photoLon);
+				}
+			}
 
 			return null;
 		}
@@ -176,6 +181,7 @@ public class GameMapActivity extends Activity {
 		newImageLon.setText(lon);
 
 		// Add the new components for the stock to the TableLayout
+		Log.d("newPhotoRow", newPhotoRow.toString());
 		photoScrollView.addView(newPhotoRow);
 
 	}
