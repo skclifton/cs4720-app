@@ -26,6 +26,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.webkit.WebView;
 import android.widget.ImageView;
 import android.widget.TableLayout;
 import android.widget.TextView;
@@ -37,6 +38,8 @@ public class GameMapActivity extends Activity {
 	ImageView image;
 	TextView latitudeTextView;
 	TextView longitudeTextView;
+	ArrayList<String> ret = new ArrayList<String>();
+	ArrayList<Drawable> drawRet = new ArrayList<Drawable>();
 
 	static final String KEY_PHOTO_URL = "url";
 	static final String KEY_PHOTO_LAT = "lat";
@@ -55,19 +58,18 @@ public class GameMapActivity extends Activity {
 		setContentView(R.layout.activity_game_map);
 
 		photoScrollView = (TableLayout) findViewById(R.id.photoScrollViewTable);
-		
+
 		Intent intent = getIntent();
 		image = (ImageView) findViewById(R.id.image);
 		latitudeTextView = (TextView) findViewById(R.id.latitudeTextView);
 		longitudeTextView = (TextView) findViewById(R.id.longitudeTextView);
-		
-		
+
 		String currentLat = Double.toString(intent.getDoubleExtra("lat", 0.0));
 		String currentLon = Double.toString(intent.getDoubleExtra("lon", 0.0));
 		String gpsCoords = intent.getStringExtra(MainActivity.GPS_COORDS);
 
-		final String sendURL = url + currentLat + "/" + currentLon;		
-		
+		final String sendURL = url + currentLat + "/" + currentLon;
+
 		TextView newImageLat = (TextView) findViewById(R.id.currentLatTextView);
 		newImageLat.setText("Latitude " + currentLat);
 
@@ -77,17 +79,16 @@ public class GameMapActivity extends Activity {
 		new MyAsyncTask().execute(sendURL);
 	}
 
-	private class MyAsyncTask extends AsyncTask<String, String, ArrayList<String>> {
+	private class MyAsyncTask extends AsyncTask<String, String, String> {
 
-		protected ArrayList<String> doInBackground(String... args) {
+		protected String doInBackground(String... args) {
 
-			String url = args[0];
-			ArrayList<String> ret = new ArrayList<String>();
+			String sendURL = args[0];
 
 			DefaultHttpClient httpclient = new DefaultHttpClient(
 					new BasicHttpParams());
 
-			HttpPost httppost = new HttpPost(url);
+			HttpPost httppost = new HttpPost(sendURL);
 			httppost.setHeader("Content-type", "application/json");
 
 			InputStream inputStream = null;
@@ -134,71 +135,71 @@ public class GameMapActivity extends Activity {
 					try {
 						jObject = jArray.getJSONObject(i);
 						photoURL = jObject.getString("url");
-						Log.d("photoURL " + Integer.toString(i), photoURL);
 						photoLat = jObject.getString("lat");
-						Log.d("photoLat " + Integer.toString(i), photoLat);
 						photoLon = jObject.getString("lon");
-						Log.d("photoLon " + Integer.toString(i), photoLon);
 
 					} catch (JSONException e) {
 						e.printStackTrace();
 					}
 
-					ret.add(photoURL);
+					URL url;
+					InputStream content = null;
+					try {
+						url = new URL(photoURL);
+						content = (InputStream) url.getContent();
+					} catch (MalformedURLException e) {
+						e.printStackTrace();
+					} catch (IOException e) {
+						e.printStackTrace();
+					}
+					Drawable d = Drawable.createFromStream(content, "src");
+					
+					drawRet.add(d);
 					ret.add(photoLat);
 					ret.add(photoLon);
-					
+
 				}
 			}
 
-			return ret;
+			return null;
 		}
 
-	}
+		protected void onPostExecute(String result) {
 
-	protected void onPostExecute(ArrayList<String> ret) {
-		
-		for (int i = 0; i < ret.size() + 2; i++) {
-			String photoURL = ret.get(i);
-			String lat = ret.get(i + 1);
-			String lon = ret.get(i + 2);
-			
-			// Get the LayoutInflator service
-			LayoutInflater inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+			for (int i = 0; i < ret.size() - 2; i += 2) {
+				Drawable photo = drawRet.get(i / 2);
+				String lat = ret.get(i);
+				String lon = ret.get(i + 1);
 
-			// Use the inflater to inflate a stock row from stock_quote_row.xml
-			View newPhotoRow = inflater.inflate(R.layout.game_map_row, null);
+				// Get the LayoutInflator service
+				LayoutInflater inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
-			ImageView newImageView = (ImageView) newPhotoRow
-					.findViewById(R.id.image);
-			URL url;
-			InputStream content = null;
-			try {
-				url = new URL(photoURL);
-				content = (InputStream) url.getContent();
-			} catch (MalformedURLException e) {
-				e.printStackTrace();
-			} catch (IOException e) {
-				e.printStackTrace();
+				// Use the inflater to inflate a stock row from
+				// stock_quote_row.xml
+				View newPhotoRow = inflater
+						.inflate(R.layout.game_map_row, null);
+
+				ImageView newImageView = (ImageView) newPhotoRow
+						.findViewById(R.id.image);
+
+				newImageView.setImageDrawable(photo);
+				
+
+				TextView newImageLat = (TextView) newPhotoRow
+						.findViewById(R.id.latitudeTextView);
+				newImageLat.setText(lat);
+
+				TextView newImageLon = (TextView) newPhotoRow
+						.findViewById(R.id.longitudeTextView);
+				newImageLon.setText(lon);
+
+				// Add the new components for the stock to the TableLayout
+				Log.d("newPhotoRow", newPhotoRow.toString());
+				photoScrollView.addView(newPhotoRow);
+
 			}
-			Drawable d = Drawable.createFromStream(content, "src");
-			newImageView.setImageDrawable(d);
 
-			TextView newImageLat = (TextView) newPhotoRow
-					.findViewById(R.id.latitudeTextView);
-			newImageLat.setText(lat);
-
-			TextView newImageLon = (TextView) newPhotoRow
-					.findViewById(R.id.longitudeTextView);
-			newImageLon.setText(lon);
-
-			// Add the new components for the stock to the TableLayout
-			Log.d("newPhotoRow", newPhotoRow.toString());
-			photoScrollView.addView(newPhotoRow);
-			
 		}
-
-	
 
 	}
 }
