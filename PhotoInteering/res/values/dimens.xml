@@ -4,5 +4,6 @@
     <dimen name="activity_horizontal_margin">16dp</dimen>
     <dimen name="activity_vertical_margin">16dp</dimen>
     <dimen name="new_game_text_size">75sp</dimen>
+    <dimen name="pad">5dp</dimen>
 
 </resources>

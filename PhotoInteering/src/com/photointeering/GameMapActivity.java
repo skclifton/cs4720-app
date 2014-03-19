@@ -166,7 +166,7 @@ public class GameMapActivity extends Activity {
 
 		protected void onPostExecute(String result) {
 
-			for (int i = 0; i < ret.size() - 2; i += 2) {
+			for (int i = 0; i < ret.size() - 1; i += 2) {
 				Drawable photo = drawRet.get(i / 2);
 				String lat = ret.get(i);
 				String lon = ret.get(i + 1);

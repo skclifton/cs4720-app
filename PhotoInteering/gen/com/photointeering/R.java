@@ -189,6 +189,7 @@ containing a value of this type.
         public static final int activity_horizontal_margin=0x7f080000;
         public static final int activity_vertical_margin=0x7f080001;
         public static final int new_game_text_size=0x7f080002;
+        public static final int pad=0x7f080003;
     }
     public static final class drawable {
         public static final int common_signin_btn_icon_dark=0x7f020000;
