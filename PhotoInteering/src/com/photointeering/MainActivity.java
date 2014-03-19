@@ -57,8 +57,15 @@ public class MainActivity extends FragmentActivity implements
 	public OnClickListener newGameButtonListener = new OnClickListener() {
 		public void onClick(View v) {
 			mCurrentLocation = mLocationClient.getLastLocation();
-			double lat = mCurrentLocation.getLatitude();
-			double lon = mCurrentLocation.getLongitude();
+			
+			double lat = 0.0;
+			double lon = 0.0;
+			
+			if (mCurrentLocation != null) {
+				Log.d("location", mCurrentLocation.toString());
+				lat = mCurrentLocation.getLatitude();
+				lon = mCurrentLocation.getLongitude();
+			}
 			
 			Intent intent = new Intent(MainActivity.this, GameMapActivity.class);
 			intent.putExtra("lat", lat);
