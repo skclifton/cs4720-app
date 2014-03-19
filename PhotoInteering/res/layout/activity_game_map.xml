@@ -28,19 +28,27 @@
 
     </TableRow>
 
-    <ScrollView
-        android:id="@+id/photoScrollView"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_span="2"
-        android:padding="5dp" >
+    <TableRow
+        android:id="@+id/tableRow1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" >
 
-        <TableLayout
+        <ScrollView
+            android:id="@+id/photoScrollView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:padding="5dp"
-            android:stretchColumns="yes" >
-        </TableLayout>
-    </ScrollView>
+            android:layout_span="2"
+            android:padding="5dp" >
+
+            <TableLayout
+                android:id="@+id/photoScrollViewTable"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="5dp"
+                android:stretchColumns="yes" >
+            </TableLayout>
+        </ScrollView>
+
+    </TableRow>
 
 </TableLayout>

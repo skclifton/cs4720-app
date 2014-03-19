@@ -222,21 +222,23 @@ containing a value of this type.
         public static final int photointeering=0x7f02001c;
     }
     public static final class id {
-        public static final int TableRow=0x7f05000b;
-        public static final int action_settings=0x7f05000f;
+        public static final int TableRow=0x7f05000d;
+        public static final int action_settings=0x7f050011;
         public static final int currentLatTextView=0x7f050007;
         public static final int currentLocationRow=0x7f050005;
         public static final int currentLocationTextView=0x7f050006;
         public static final int currentLonTextView=0x7f050008;
         public static final int hybrid=0x7f050004;
-        public static final int image=0x7f05000c;
-        public static final int latitudeTextView=0x7f05000d;
-        public static final int longitudeTextView=0x7f05000e;
-        public static final int newGameButton=0x7f05000a;
+        public static final int image=0x7f05000e;
+        public static final int latitudeTextView=0x7f05000f;
+        public static final int longitudeTextView=0x7f050010;
+        public static final int newGameButton=0x7f05000c;
         public static final int none=0x7f050000;
         public static final int normal=0x7f050001;
-        public static final int photoScrollView=0x7f050009;
+        public static final int photoScrollView=0x7f05000a;
+        public static final int photoScrollViewTable=0x7f05000b;
         public static final int satellite=0x7f050002;
+        public static final int tableRow1=0x7f050009;
         public static final int terrain=0x7f050003;
     }
     public static final class integer {
