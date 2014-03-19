@@ -49,7 +49,7 @@ public class GameMapActivity extends Activity {
 	double latitude = 0.0;
 	double longitude = 0.0;
 
-	String url = "http://plato.cs.virginia.edu/~roe2pj/new_game/";
+	String url = "http://plato.cs.virginia.edu/~cs4720s14asparagus/new_game/";
 
 	private TableLayout photoScrollView;
 
