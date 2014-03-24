@@ -117,6 +117,8 @@ public class GameMapActivity extends Activity {
 				} catch (Exception squish) {
 				}
 			}
+			
+			System.out.println();
 
 			JSONArray jArray = null;
 			try {
