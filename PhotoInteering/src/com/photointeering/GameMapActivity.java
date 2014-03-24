@@ -118,10 +118,10 @@ public class GameMapActivity extends Activity {
 				}
 			}
 			
-			System.out.println();
-
 			JSONArray jArray = null;
 			try {
+				Log.d("jArray", result.toString());
+
 				jArray = new JSONArray(result);
 			} catch (JSONException e1) {
 				// TODO Auto-generated catch block
