@@ -38,7 +38,7 @@ public class GameMapActivity extends Activity {
 	ImageView image;
 	TextView latitudeTextView;
 	TextView longitudeTextView;
-	ArrayList<String> ret = new ArrayList<String>();
+	ArrayList<Double> ret = new ArrayList<Double>();
 	ArrayList<Drawable> drawRet = new ArrayList<Drawable>();
 
 	static final String KEY_PHOTO_URL = "url";
@@ -132,13 +132,13 @@ public class GameMapActivity extends Activity {
 				for (int i = 0; i < jArray.length(); i++) {
 					JSONObject jObject;
 					String photoURL = null;
-					String photoLat = "0.0";
-					String photoLon = "0.0";
+					double photoLat = 0;
+					double photoLon = 0;
 					try {
 						jObject = jArray.getJSONObject(i);
 						photoURL = jObject.getString("url");
-						photoLat = jObject.getString("lat");
-						photoLon = jObject.getString("lon");
+						photoLat = jObject.getDouble("lat");
+						photoLon = jObject.getDouble("lon");
 
 					} catch (JSONException e) {
 						e.printStackTrace();
@@ -170,8 +170,8 @@ public class GameMapActivity extends Activity {
 
 			for (int i = 0; i < ret.size() - 1; i += 2) {
 				Drawable photo = drawRet.get(i / 2);
-				String lat = ret.get(i);
-				String lon = ret.get(i + 1);
+				double lat = ret.get(i);
+				double lon = ret.get(i + 1);
 
 				// Get the LayoutInflator service
 				LayoutInflater inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -189,11 +189,13 @@ public class GameMapActivity extends Activity {
 
 				TextView newImageLat = (TextView) newPhotoRow
 						.findViewById(R.id.latitudeTextView);
-				newImageLat.setText(lat);
+				String string_lat = Double.toString(lat);
+				newImageLat.setText(string_lat);
 
 				TextView newImageLon = (TextView) newPhotoRow
 						.findViewById(R.id.longitudeTextView);
-				newImageLon.setText(lon);
+				String string_long = Double.toString(lon);
+				newImageLon.setText(string_long);
 
 				// Add the new components for the stock to the TableLayout
 				Log.d("newPhotoRow", newPhotoRow.toString());
