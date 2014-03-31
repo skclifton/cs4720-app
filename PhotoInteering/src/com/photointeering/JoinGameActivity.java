@@ -7,6 +7,7 @@ import java.io.InputStreamReader;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -44,6 +45,10 @@ public class JoinGameActivity extends Activity {
 	// ret changed to carry strings.
 	ArrayList<String> ret = new ArrayList<String>();
 	ArrayList<Drawable> drawRet = new ArrayList<Drawable>();
+	
+	//map to keep count of each gameID, as well as to which game players belong
+	HashMap<Integer,Integer> IDMap;
+	HashMap<String,Integer> playerMap;
 
 	static final String KEY_PHOTO_URL = "url";
 	static final String KEY_PHOTO_LAT = "lat";
@@ -133,43 +138,44 @@ public class JoinGameActivity extends Activity {
 				// TODO Auto-generated catch block
 				e1.printStackTrace();
 			}
-
+			
+			IDMap = new HashMap<Integer, Integer>();
+			playerMap = new HashMap<String, Integer>();
+			
 			if (jArray != null) {
 				for (int i = 0; i < jArray.length(); i++) {
 					JSONObject jObject;
 					
+					//get hash mapping ids to counts
+					// for each new json object get id, 
+					// if id is in map, then increment count
+					// if not, then add it to map and set count to 1.
+					
 					String gameCreator = null;
 					int gameID = 0;
+										
 					try {
-						jObject = jArray.getJSONObject(i);
-						photoURL = jObject.getString("url");
+						jObject = jArray.getJSONObject(i);						
 						gameCreator = jObject.getString("username");
 						gameID = jObject.getInt("gameID");
 
 					} catch (JSONException e) {
-						e.printStackTrace();
+						Log.e("error", e.getMessage());					
 					}
 
+					playerMap.put(gameCreator, gameID);
 					
-					// Photo data not needed for join game activity.
-//					URL url;
-//					InputStream content = null;
-//					try {
-//						url = new URL(photoURL);
-//						content = (InputStream) url.getContent();
-//					} catch (MalformedURLException e) {
-//						e.printStackTrace();
-//					} catch (IOException e) {
-//						e.printStackTrace();
-//					}
-//					Drawable d = Drawable.createFromStream(content, "src");
+					if (! IDMap.containsKey(gameID)) {
+						IDMap.put(gameID, 1);
+					} else {						
+						int increment = IDMap.get(gameID) + 1;
+						IDMap.put(gameID, increment);
+					}
 					
 					String gameID_str = gameID + "";									
 //					
-//					drawRet.add(d);
 					ret.add(gameID_str);
 					ret.add(gameCreator);
-
 				}
 			}
 
@@ -178,13 +184,36 @@ public class JoinGameActivity extends Activity {
 
 		protected void onPostExecute(String result) {
 					
-			Log.v("IBIBBI", "The size of ret is " + ret.size());
+			Log.v("IDMap", IDMap.toString());
+			
+			//initialize arrays to hold keys from IDMap and the playerMap
+			Object[] gameIDs;
+			gameIDs = IDMap.keySet().toArray();
 
-			for (int i = 0; i < ret.size() - 1; i += 2) {
-//				Drawable photo = drawRet.get(i / 2);
-				String id = ret.get(i);
-				String creator = ret.get(i + 1);
-
+			Object[] players;
+			players = playerMap.keySet().toArray();
+			
+			//create map from IDs to players, this is the player that will show up in full in the menu
+			HashMap<Integer, String> mainPlayers = new HashMap<Integer, String>();
+			
+			
+			// go through all of the 
+			for (int i = 0; i < gameIDs.length ; i += 1) {
+				
+				
+				
+				//establish which player name is listed on the join row.
+				//It is the first player that is associated with the current game id.
+				for (int j = 0; j < players.length; j+=1){
+					if(playerMap.get(players[j]) == gameIDs[i]) {
+						if (! mainPlayers.containsKey(gameIDs[i])) {
+							mainPlayers.put((Integer) gameIDs[i], (String) players[j]);	
+						} 						
+						break;
+					}						
+					
+				}
+				
 				// Get the LayoutInflator service
 				LayoutInflater inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
@@ -193,24 +222,20 @@ public class JoinGameActivity extends Activity {
 				View newJoinRow = inflater
 						.inflate(R.layout.join_game_row, null);
 
-//				ImageView newImageView = (ImageView) newPhotoRow
-//						.findViewById(R.id.image);
-//
-//				newImageView.setImageDrawable(photo);
-				
-
 				TextView GameID = (TextView) newJoinRow
 						.findViewById(R.id.GameIDTextView);
-//				String string_lat = Double.toString(lat);
-				GameID.setText(id);
+				
+				String id_str = gameIDs[i].toString();
+				GameID.setText(id_str);
 
 				TextView gameCreator = (TextView) newJoinRow
 						.findViewById(R.id.GameCreatorTextView);
-//				String string_long = Double.toString(lon);
-				gameCreator.setText(creator);
+				
+				String player_string = mainPlayers.get(gameIDs[i]) + " + " + (IDMap.get(gameIDs[i]) - 1) + " others playing"; 
+				gameCreator.setText(player_string);
 
-				// Add the new components for the stock to the TableLayout
-				Log.d("newPhotoRow", newJoinRow.toString());
+				// Add the new components for the row to the TableLayout
+				Log.d("newJoinRow", newJoinRow.toString());
 				joinScrollView.addView(newJoinRow);
 
 			}
