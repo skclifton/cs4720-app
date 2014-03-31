@@ -75,6 +75,7 @@ public class MainActivity extends FragmentActivity implements
 			Intent intent = new Intent(MainActivity.this, GameMapActivity.class);
 			intent.putExtra("lat", lat);
 			intent.putExtra("lon", lon);
+			intent.putExtra("newGame", true);
 			
 			Log.d("tag", "click! " + lat + " " + lon);
 			
@@ -99,6 +100,7 @@ public class MainActivity extends FragmentActivity implements
 			Intent intent = new Intent(MainActivity.this, JoinGameActivity.class);
 			intent.putExtra("lat", lat);
 			intent.putExtra("lon", lon);
+			intent.putExtra("newGame", false);
 			
 			Log.d("tag", "click! " + lat + " " + lon);
 			

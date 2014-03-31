@@ -58,7 +58,8 @@ public class GameMapActivity extends Activity {
 	double latitude = 0.0;
 	double longitude = 0.0;
 
-	String url = "http://plato.cs.virginia.edu/~cs4720s14asparagus/new_game/";
+	String newGameURL = "http://plato.cs.virginia.edu/~cs4720s14asparagus/new_game/";
+	String joinGameURL = "http://plato.cs.virginia.edu/~cs4720s14asparagus/join_game/";
 
 	private TableLayout photoScrollView;
 
@@ -82,8 +83,16 @@ public class GameMapActivity extends Activity {
 		String currentLat = Double.toString(currentLatDouble);
 		String currentLon = Double.toString(currentLonDouble);
 		String gpsCoords = intent.getStringExtra(MainActivity.GPS_COORDS);
+		boolean newGame = intent.getBooleanExtra("newGame", true);
+		int gameID = intent.getIntExtra("gameID", 0);
+		String sendURL = "";
 
-		final String sendURL = url + currentLat + "/" + currentLon;
+		if (newGame) {
+			sendURL = newGameURL + currentLat + "/" + currentLon;
+		}
+		else {
+			sendURL = joinGameURL + gameID + "/" + "test";
+		}
 
 		map = ((MapFragment) getFragmentManager().findFragmentById(R.id.map))
 				.getMap();
