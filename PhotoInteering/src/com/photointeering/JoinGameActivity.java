@@ -26,19 +26,23 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.webkit.WebView;
 import android.widget.ImageView;
 import android.widget.TableLayout;
 import android.widget.TextView;
 
-public class GameMapActivity extends Activity {
 
+public class JoinGameActivity extends Activity {
+	
 	private static final String TAG = "PHOTO";
 
 	ImageView image;
-	TextView latitudeTextView;
-	TextView longitudeTextView;
-	ArrayList<Double> ret = new ArrayList<Double>();
+	
+	TextView GameCreatorTextView;
+	TextView GameIDTextView;
+	
+	
+	// ret changed to carry strings.
+	ArrayList<String> ret = new ArrayList<String>();
 	ArrayList<Drawable> drawRet = new ArrayList<Drawable>();
 
 	static final String KEY_PHOTO_URL = "url";
@@ -49,20 +53,19 @@ public class GameMapActivity extends Activity {
 	double latitude = 0.0;
 	double longitude = 0.0;
 
-	String url = "http://plato.cs.virginia.edu/~cs4720s14asparagus/new_game/";
+	String url = "http://asparagus-phase3.azurewebsites.net/";
 
-	private TableLayout photoScrollView;
+	private TableLayout joinScrollView;
 
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.activity_game_map);
+		setContentView(R.layout.activity_join_game);
 
-		photoScrollView = (TableLayout) findViewById(R.id.photoScrollViewTable);
+		joinScrollView = (TableLayout) findViewById(R.id.joinScrollViewTable);
 
-		Intent intent = getIntent();
-		image = (ImageView) findViewById(R.id.image);
-		latitudeTextView = (TextView) findViewById(R.id.latitudeTextView);
-		longitudeTextView = (TextView) findViewById(R.id.longitudeTextView);
+		Intent intent = getIntent();		
+		GameIDTextView = (TextView) findViewById(R.id.GameIDTextView);
+		GameCreatorTextView = (TextView) findViewById(R.id.GameCreatorTextView);
 
 		String currentLat = Double.toString(intent.getDoubleExtra("lat", 0.0));
 		String currentLon = Double.toString(intent.getDoubleExtra("lon", 0.0));
@@ -70,11 +73,11 @@ public class GameMapActivity extends Activity {
 
 		final String sendURL = url + currentLat + "/" + currentLon;
 
-		TextView newImageLat = (TextView) findViewById(R.id.currentLatTextView);
-		newImageLat.setText("Latitude " + currentLat);
-
-		TextView newImageLon = (TextView) findViewById(R.id.currentLonTextView);
-		newImageLon.setText("Longitude " + currentLon);
+//		TextView newImageLat = (TextView) findViewById(R.id.currentLatTextView);
+//		newImageLat.setText("Latitude " + currentLat);
+//
+//		TextView newImageLon = (TextView) findViewById(R.id.currentLonTextView);
+//		newImageLon.setText("Longitude " + currentLon);
 
 		new MyAsyncTask().execute(sendURL);
 	}
@@ -134,34 +137,38 @@ public class GameMapActivity extends Activity {
 			if (jArray != null) {
 				for (int i = 0; i < jArray.length(); i++) {
 					JSONObject jObject;
-					String photoURL = null;
-					double photoLat = 0;
-					double photoLon = 0;
+					
+					String gameCreator = null;
+					int gameID = 0;
 					try {
 						jObject = jArray.getJSONObject(i);
 						photoURL = jObject.getString("url");
-						photoLat = jObject.getDouble("lat");
-						photoLon = jObject.getDouble("lon");
+						gameCreator = jObject.getString("username");
+						gameID = jObject.getInt("gameID");
 
 					} catch (JSONException e) {
 						e.printStackTrace();
 					}
 
-					URL url;
-					InputStream content = null;
-					try {
-						url = new URL(photoURL);
-						content = (InputStream) url.getContent();
-					} catch (MalformedURLException e) {
-						e.printStackTrace();
-					} catch (IOException e) {
-						e.printStackTrace();
-					}
-					Drawable d = Drawable.createFromStream(content, "src");
 					
-					drawRet.add(d);
-					ret.add(photoLat);
-					ret.add(photoLon);
+					// Photo data not needed for join game activity.
+//					URL url;
+//					InputStream content = null;
+//					try {
+//						url = new URL(photoURL);
+//						content = (InputStream) url.getContent();
+//					} catch (MalformedURLException e) {
+//						e.printStackTrace();
+//					} catch (IOException e) {
+//						e.printStackTrace();
+//					}
+//					Drawable d = Drawable.createFromStream(content, "src");
+					
+					String gameID_str = gameID + "";									
+//					
+//					drawRet.add(d);
+					ret.add(gameID_str);
+					ret.add(gameCreator);
 
 				}
 			}
@@ -170,43 +177,46 @@ public class GameMapActivity extends Activity {
 		}
 
 		protected void onPostExecute(String result) {
+					
+			Log.v("IBIBBI", "The size of ret is " + ret.size());
 
 			for (int i = 0; i < ret.size() - 1; i += 2) {
-				Drawable photo = drawRet.get(i / 2);
-				double lat = ret.get(i);
-				double lon = ret.get(i + 1);
+//				Drawable photo = drawRet.get(i / 2);
+				String id = ret.get(i);
+				String creator = ret.get(i + 1);
 
 				// Get the LayoutInflator service
 				LayoutInflater inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
 				// Use the inflater to inflate a join row from
-				// game_map_row.xml
-				View newPhotoRow = inflater
-						.inflate(R.layout.game_map_row, null);
+				// join_game_row.xml
+				View newJoinRow = inflater
+						.inflate(R.layout.join_game_row, null);
 
-				ImageView newImageView = (ImageView) newPhotoRow
-						.findViewById(R.id.image);
-
-				newImageView.setImageDrawable(photo);
+//				ImageView newImageView = (ImageView) newPhotoRow
+//						.findViewById(R.id.image);
+//
+//				newImageView.setImageDrawable(photo);
 				
 
-				TextView newImageLat = (TextView) newPhotoRow
-						.findViewById(R.id.latitudeTextView);
-				String string_lat = Double.toString(lat);
-				newImageLat.setText(string_lat);
+				TextView GameID = (TextView) newJoinRow
+						.findViewById(R.id.GameIDTextView);
+//				String string_lat = Double.toString(lat);
+				GameID.setText(id);
 
-				TextView newImageLon = (TextView) newPhotoRow
-						.findViewById(R.id.longitudeTextView);
-				String string_long = Double.toString(lon);
-				newImageLon.setText(string_long);
+				TextView gameCreator = (TextView) newJoinRow
+						.findViewById(R.id.GameCreatorTextView);
+//				String string_long = Double.toString(lon);
+				gameCreator.setText(creator);
 
 				// Add the new components for the stock to the TableLayout
-				Log.d("newPhotoRow", newPhotoRow.toString());
-				photoScrollView.addView(newPhotoRow);
+				Log.d("newPhotoRow", newJoinRow.toString());
+				joinScrollView.addView(newJoinRow);
 
 			}
 
 		}
 
 	}
+
 }

@@ -26,6 +26,7 @@
             </intent-filter>
         </activity>
         <activity android:name="com.photointeering.GameMapActivity" />
+        <activity android:name="com.photointeering.JoinGameActivity" />
 
         <meta-data
             android:name="com.google.android.gms.version"

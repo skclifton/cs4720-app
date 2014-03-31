@@ -6,5 +6,6 @@
     <string name="hello_world">Hello world!</string>
     <string name="new_game_button">New Game</string>
     <string name="current_location">"Current Location: "</string>
+    <string name="join_game_button">&quot;Join Game&quot;</string>
 
 </resources>

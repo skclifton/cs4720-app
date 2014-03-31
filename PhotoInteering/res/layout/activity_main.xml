@@ -16,5 +16,15 @@
         android:layout_centerVertical="true"
         android:text="@string/new_game_button"
         android:textSize="@dimen/new_game_text_size" />
+    
+    <Button
+        android:id="@+id/joinGameButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/newGameButton"
+        android:layout_centerHorizontal="true"
+        android:layout_centerVertical="true"
+        android:text="@string/join_game_button"
+        android:textSize="@dimen/new_game_text_size" />
 
 </RelativeLayout>

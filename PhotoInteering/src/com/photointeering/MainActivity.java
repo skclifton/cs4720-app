@@ -32,6 +32,7 @@ public class MainActivity extends FragmentActivity implements
 	private static final String DIALOG_ERROR = "dialog_error";
 	
 	Button newGameButton;
+	Button joinGameButton;
 	LocationClient mLocationClient;
 	Location mCurrentLocation;
 	
@@ -43,6 +44,10 @@ public class MainActivity extends FragmentActivity implements
 		newGameButton = (Button) findViewById(R.id.newGameButton);
 		
 		newGameButton.setOnClickListener(newGameButtonListener);
+		
+		joinGameButton = (Button) findViewById(R.id.joinGameButton);
+		
+		joinGameButton.setOnClickListener(joinGameButtonListener);
 		
 		mLocationClient = new LocationClient(this, this, this);
 	}
@@ -68,6 +73,30 @@ public class MainActivity extends FragmentActivity implements
 			}
 			
 			Intent intent = new Intent(MainActivity.this, GameMapActivity.class);
+			intent.putExtra("lat", lat);
+			intent.putExtra("lon", lon);
+			
+			Log.d("tag", "click! " + lat + " " + lon);
+			
+			startActivity(intent);
+		}
+		
+	};
+	
+	public OnClickListener joinGameButtonListener = new OnClickListener() {
+		public void onClick(View v) {
+			mCurrentLocation = mLocationClient.getLastLocation();
+			
+			double lat = 0.0;
+			double lon = 0.0;
+			
+			if (mCurrentLocation != null) {
+				Log.d("location", mCurrentLocation.toString());
+				lat = mCurrentLocation.getLatitude();
+				lon = mCurrentLocation.getLongitude();
+			}
+			
+			Intent intent = new Intent(MainActivity.this, JoinGameActivity.class);
 			intent.putExtra("lat", lat);
 			intent.putExtra("lon", lon);
 			
