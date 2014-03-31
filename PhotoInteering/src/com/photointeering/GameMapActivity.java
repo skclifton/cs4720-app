@@ -17,6 +17,14 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.MapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
+import com.google.android.gms.maps.model.MarkerOptions;
+
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
@@ -55,7 +63,8 @@ public class GameMapActivity extends Activity {
 
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.activity_game_map);
+		setContentView(R.layout.activity_game);		
+//		setContentView(R.layout.activity_game_map);
 
 		photoScrollView = (TableLayout) findViewById(R.id.photoScrollViewTable);
 
@@ -64,17 +73,35 @@ public class GameMapActivity extends Activity {
 		latitudeTextView = (TextView) findViewById(R.id.latitudeTextView);
 		longitudeTextView = (TextView) findViewById(R.id.longitudeTextView);
 
-		String currentLat = Double.toString(intent.getDoubleExtra("lat", 0.0));
-		String currentLon = Double.toString(intent.getDoubleExtra("lon", 0.0));
+		Double currentLatDouble = intent.getDoubleExtra("lat", 0.0);
+		Double currentLonDouble = intent.getDoubleExtra("lon", 0.0);
+		
+		String currentLat = Double.toString(currentLatDouble);
+		String currentLon = Double.toString(currentLonDouble);
 		String gpsCoords = intent.getStringExtra(MainActivity.GPS_COORDS);
 
 		final String sendURL = url + currentLat + "/" + currentLon;
+		
+		GoogleMap map = ((MapFragment) getFragmentManager().findFragmentById(R.id.map))
+		        .getMap();
+		LatLng current = new LatLng(currentLatDouble, currentLonDouble);
+	    Marker currentMark = map.addMarker(new MarkerOptions().position(current)
+	        .title("Start"));
+//	        .snippet("Kiel is cool"));
+//	        .icon(BitmapDescriptorFactory
+//	            .fromResource(R.drawable.ic_launcher)));
 
-		TextView newImageLat = (TextView) findViewById(R.id.currentLatTextView);
-		newImageLat.setText("Latitude " + currentLat);
+	    // Move the camera instantly to hamburg with a zoom of 15.
+	    map.moveCamera(CameraUpdateFactory.newLatLngZoom(current, 15));
 
-		TextView newImageLon = (TextView) findViewById(R.id.currentLonTextView);
-		newImageLon.setText("Longitude " + currentLon);
+	    // Zoom in, animating the camera.
+	    map.animateCamera(CameraUpdateFactory.zoomTo(10), 2000, null);
+
+//		TextView newImageLat = (TextView) findViewById(R.id.currentLatTextView);
+//		newImageLat.setText("Latitude " + currentLat);
+//
+//		TextView newImageLon = (TextView) findViewById(R.id.currentLonTextView);
+//		newImageLon.setText("Longitude " + currentLon);
 
 		new MyAsyncTask().execute(sendURL);
 	}
@@ -170,41 +197,45 @@ public class GameMapActivity extends Activity {
 		}
 
 		protected void onPostExecute(String result) {
+			
+			
 
-			for (int i = 0; i < ret.size() - 1; i += 2) {
-				Drawable photo = drawRet.get(i / 2);
-				double lat = ret.get(i);
-				double lon = ret.get(i + 1);
-
-				// Get the LayoutInflator service
-				LayoutInflater inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-
-				// Use the inflater to inflate a join row from
-				// game_map_row.xml
-				View newPhotoRow = inflater
-						.inflate(R.layout.game_map_row, null);
-
-				ImageView newImageView = (ImageView) newPhotoRow
-						.findViewById(R.id.image);
-
-				newImageView.setImageDrawable(photo);
+//			for (int i = 0; i < ret.size() - 1; i += 2) {
+//				Drawable photo = drawRet.get(i / 2);
+//				double lat = ret.get(i);
+//				double lon = ret.get(i + 1);
+				
 				
 
-				TextView newImageLat = (TextView) newPhotoRow
-						.findViewById(R.id.latitudeTextView);
-				String string_lat = Double.toString(lat);
-				newImageLat.setText(string_lat);
+//				// Get the LayoutInflator service
+//				LayoutInflater inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+//
+//				// Use the inflater to inflate a join row from
+//				// game_map_row.xml
+//				View newPhotoRow = inflater
+//						.inflate(R.layout.game_map_row, null);
+//
+//				ImageView newImageView = (ImageView) newPhotoRow
+//						.findViewById(R.id.image);
+//
+//				newImageView.setImageDrawable(photo);
+//				
+//
+//				TextView newImageLat = (TextView) newPhotoRow
+//						.findViewById(R.id.latitudeTextView);
+//				String string_lat = Double.toString(lat);
+//				newImageLat.setText(string_lat);
+//
+//				TextView newImageLon = (TextView) newPhotoRow
+//						.findViewById(R.id.longitudeTextView);
+//				String string_long = Double.toString(lon);
+//				newImageLon.setText(string_long);
+//
+//				// Add the new components for the stock to the TableLayout
+//				Log.d("newPhotoRow", newPhotoRow.toString());
+//				photoScrollView.addView(newPhotoRow);
 
-				TextView newImageLon = (TextView) newPhotoRow
-						.findViewById(R.id.longitudeTextView);
-				String string_long = Double.toString(lon);
-				newImageLon.setText(string_long);
-
-				// Add the new components for the stock to the TableLayout
-				Log.d("newPhotoRow", newPhotoRow.toString());
-				photoScrollView.addView(newPhotoRow);
-
-			}
+//			}
 
 		}
 

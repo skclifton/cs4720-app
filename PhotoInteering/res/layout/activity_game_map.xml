@@ -30,7 +30,7 @@
     </TableRow>
 
     <TableRow
-        android:id="@+id/tableRow1"
+        android:id="@+id/player"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:gravity="center_horizontal" >
