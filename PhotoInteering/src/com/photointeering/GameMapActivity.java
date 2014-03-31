@@ -19,6 +19,7 @@ import org.json.JSONObject;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.GoogleMap.InfoWindowAdapter;
 import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
@@ -61,10 +62,12 @@ public class GameMapActivity extends Activity {
 
 	private TableLayout photoScrollView;
 
+	GoogleMap map;
+
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.activity_game);		
-//		setContentView(R.layout.activity_game_map);
+		setContentView(R.layout.activity_game);
+		// setContentView(R.layout.activity_game_map);
 
 		photoScrollView = (TableLayout) findViewById(R.id.photoScrollViewTable);
 
@@ -75,33 +78,34 @@ public class GameMapActivity extends Activity {
 
 		Double currentLatDouble = intent.getDoubleExtra("lat", 0.0);
 		Double currentLonDouble = intent.getDoubleExtra("lon", 0.0);
-		
+
 		String currentLat = Double.toString(currentLatDouble);
 		String currentLon = Double.toString(currentLonDouble);
 		String gpsCoords = intent.getStringExtra(MainActivity.GPS_COORDS);
 
 		final String sendURL = url + currentLat + "/" + currentLon;
-		
-		GoogleMap map = ((MapFragment) getFragmentManager().findFragmentById(R.id.map))
-		        .getMap();
+
+		map = ((MapFragment) getFragmentManager().findFragmentById(R.id.map))
+				.getMap();
 		LatLng current = new LatLng(currentLatDouble, currentLonDouble);
-	    Marker currentMark = map.addMarker(new MarkerOptions().position(current)
-	        .title("Start"));
-//	        .snippet("Kiel is cool"));
-//	        .icon(BitmapDescriptorFactory
-//	            .fromResource(R.drawable.ic_launcher)));
+		Marker currentMark = map.addMarker(new MarkerOptions()
+				.position(current).title("Start"));
+		// .snippet("Kiel is cool"));
+		// .icon(BitmapDescriptorFactory
+		// .fromResource(R.drawable.ic_launcher)));
 
-	    // Move the camera instantly to hamburg with a zoom of 15.
-	    map.moveCamera(CameraUpdateFactory.newLatLngZoom(current, 15));
+		map.moveCamera(CameraUpdateFactory.newLatLngZoom(current, 0));
 
-	    // Zoom in, animating the camera.
-	    map.animateCamera(CameraUpdateFactory.zoomTo(10), 2000, null);
+		// Zoom in, animating the camera.
+		map.animateCamera(CameraUpdateFactory.zoomTo(15), 2000, null);
 
-//		TextView newImageLat = (TextView) findViewById(R.id.currentLatTextView);
-//		newImageLat.setText("Latitude " + currentLat);
-//
-//		TextView newImageLon = (TextView) findViewById(R.id.currentLonTextView);
-//		newImageLon.setText("Longitude " + currentLon);
+		// TextView newImageLat = (TextView)
+		// findViewById(R.id.currentLatTextView);
+		// newImageLat.setText("Latitude " + currentLat);
+		//
+		// TextView newImageLon = (TextView)
+		// findViewById(R.id.currentLonTextView);
+		// newImageLon.setText("Longitude " + currentLon);
 
 		new MyAsyncTask().execute(sendURL);
 	}
@@ -119,8 +123,6 @@ public class GameMapActivity extends Activity {
 			httppost.setHeader("Content-type", "application/json");
 
 			InputStream inputStream = null;
-			
-		
 
 			String result = null;
 
@@ -139,7 +141,7 @@ public class GameMapActivity extends Activity {
 				result = sb.toString();
 				Log.d("result", result);
 			} catch (Exception e) {
-				
+
 			} finally {
 				try {
 					if (inputStream != null)
@@ -147,7 +149,7 @@ public class GameMapActivity extends Activity {
 				} catch (Exception squish) {
 				}
 			}
-			
+
 			JSONArray jArray = null;
 			try {
 				Log.d("jArray", result.toString());
@@ -185,7 +187,7 @@ public class GameMapActivity extends Activity {
 						e.printStackTrace();
 					}
 					Drawable d = Drawable.createFromStream(content, "src");
-					
+
 					drawRet.add(d);
 					ret.add(photoLat);
 					ret.add(photoLon);
@@ -197,45 +199,52 @@ public class GameMapActivity extends Activity {
 		}
 
 		protected void onPostExecute(String result) {
-			
-			
 
-//			for (int i = 0; i < ret.size() - 1; i += 2) {
-//				Drawable photo = drawRet.get(i / 2);
-//				double lat = ret.get(i);
-//				double lon = ret.get(i + 1);
+			for (int i = 0; i < ret.size() - 1; i += 2) {
+				Drawable photo = drawRet.get(i / 2);
+				double lat = ret.get(i);
+				double lon = ret.get(i + 1);
+
+				LatLng photoPosition = new LatLng(lat, lon);
 				
-				
+				Marker currentMark = map
+						.addMarker(new MarkerOptions()
+								.position(photoPosition)
+								.icon(BitmapDescriptorFactory
+										.defaultMarker(BitmapDescriptorFactory.HUE_AZURE)));
 
-//				// Get the LayoutInflator service
-//				LayoutInflater inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-//
-//				// Use the inflater to inflate a join row from
-//				// game_map_row.xml
-//				View newPhotoRow = inflater
-//						.inflate(R.layout.game_map_row, null);
-//
-//				ImageView newImageView = (ImageView) newPhotoRow
-//						.findViewById(R.id.image);
-//
-//				newImageView.setImageDrawable(photo);
-//				
-//
-//				TextView newImageLat = (TextView) newPhotoRow
-//						.findViewById(R.id.latitudeTextView);
-//				String string_lat = Double.toString(lat);
-//				newImageLat.setText(string_lat);
-//
-//				TextView newImageLon = (TextView) newPhotoRow
-//						.findViewById(R.id.longitudeTextView);
-//				String string_long = Double.toString(lon);
-//				newImageLon.setText(string_long);
-//
-//				// Add the new components for the stock to the TableLayout
-//				Log.d("newPhotoRow", newPhotoRow.toString());
-//				photoScrollView.addView(newPhotoRow);
+			}
 
-//			}
+			// // Get the LayoutInflator service
+			// LayoutInflater inflater = (LayoutInflater)
+			// getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+			//
+			// // Use the inflater to inflate a join row from
+			// // game_map_row.xml
+			// View newPhotoRow = inflater
+			// .inflate(R.layout.game_map_row, null);
+			//
+			// ImageView newImageView = (ImageView) newPhotoRow
+			// .findViewById(R.id.image);
+			//
+			// newImageView.setImageDrawable(photo);
+			//
+			//
+			// TextView newImageLat = (TextView) newPhotoRow
+			// .findViewById(R.id.latitudeTextView);
+			// String string_lat = Double.toString(lat);
+			// newImageLat.setText(string_lat);
+			//
+			// TextView newImageLon = (TextView) newPhotoRow
+			// .findViewById(R.id.longitudeTextView);
+			// String string_long = Double.toString(lon);
+			// newImageLon.setText(string_long);
+			//
+			// // Add the new components for the stock to the TableLayout
+			// Log.d("newPhotoRow", newPhotoRow.toString());
+			// photoScrollView.addView(newPhotoRow);
+
+			// }
 
 		}
 

@@ -6,7 +6,7 @@
     android:orientation="horizontal" >
 
     <TableLayout
-        android:layout_width="234dp"
+        android:layout_width="350dp"
         android:layout_height="match_parent" >
 
         <TableRow
