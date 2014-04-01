@@ -7,5 +7,11 @@
     <string name="new_game_button">New Game</string>
     <string name="current_location">"Current Location: "</string>
     <string name="join_game_button">&quot;Join Game&quot;</string>
+    <string name="player_label">Player:</string>
+    <string name="photos_found_label">Photos Found:</string>
+    <string name="game_title">PhotoInteering</string>
+    <string name="game_ID">Game ID</string>
+    <string name="players_title">Players</string>
+    <string name="join_game_title">Join Game</string>
 
 </resources>

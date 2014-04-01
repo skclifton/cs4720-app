@@ -27,28 +27,28 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.View.OnClickListener;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TableLayout;
 import android.widget.TextView;
 
-
 public class JoinGameActivity extends Activity {
-	
+
 	private static final String TAG = "PHOTO";
 
 	ImageView image;
-	
+
 	TextView GameCreatorTextView;
 	TextView GameIDTextView;
-	
-	
+
 	// ret changed to carry strings.
 	ArrayList<String> ret = new ArrayList<String>();
 	ArrayList<Drawable> drawRet = new ArrayList<Drawable>();
-	
-	//map to keep count of each gameID, as well as to which game players belong
-	HashMap<Integer,Integer> IDMap;
-	HashMap<String,Integer> playerMap;
+
+	// map to keep count of each gameID, as well as to which game players belong
+	HashMap<Integer, Integer> IDMap;
+	HashMap<String, Integer> playerMap;
 
 	static final String KEY_PHOTO_URL = "url";
 	static final String KEY_PHOTO_LAT = "lat";
@@ -68,7 +68,7 @@ public class JoinGameActivity extends Activity {
 
 		joinScrollView = (TableLayout) findViewById(R.id.joinScrollViewTable);
 
-		Intent intent = getIntent();		
+		Intent intent = getIntent();
 		GameIDTextView = (TextView) findViewById(R.id.GameIDTextView);
 		GameCreatorTextView = (TextView) findViewById(R.id.GameCreatorTextView);
 
@@ -78,11 +78,13 @@ public class JoinGameActivity extends Activity {
 
 		final String sendURL = url + currentLat + "/" + currentLon;
 
-//		TextView newImageLat = (TextView) findViewById(R.id.currentLatTextView);
-//		newImageLat.setText("Latitude " + currentLat);
-//
-//		TextView newImageLon = (TextView) findViewById(R.id.currentLonTextView);
-//		newImageLon.setText("Longitude " + currentLon);
+		// TextView newImageLat = (TextView)
+		// findViewById(R.id.currentLatTextView);
+		// newImageLat.setText("Latitude " + currentLat);
+		//
+		// TextView newImageLon = (TextView)
+		// findViewById(R.id.currentLonTextView);
+		// newImageLon.setText("Longitude " + currentLon);
 
 		new MyAsyncTask().execute(sendURL);
 	}
@@ -100,8 +102,6 @@ public class JoinGameActivity extends Activity {
 			httppost.setHeader("Content-type", "application/json");
 
 			InputStream inputStream = null;
-			
-		
 
 			String result = null;
 
@@ -120,7 +120,7 @@ public class JoinGameActivity extends Activity {
 				result = sb.toString();
 				Log.d("result", result);
 			} catch (Exception e) {
-				
+
 			} finally {
 				try {
 					if (inputStream != null)
@@ -128,7 +128,7 @@ public class JoinGameActivity extends Activity {
 				} catch (Exception squish) {
 				}
 			}
-			
+
 			JSONArray jArray = null;
 			try {
 				Log.d("jArray", result.toString());
@@ -138,42 +138,42 @@ public class JoinGameActivity extends Activity {
 				// TODO Auto-generated catch block
 				e1.printStackTrace();
 			}
-			
+
 			IDMap = new HashMap<Integer, Integer>();
 			playerMap = new HashMap<String, Integer>();
-			
+
 			if (jArray != null) {
 				for (int i = 0; i < jArray.length(); i++) {
 					JSONObject jObject;
-					
-					//get hash mapping ids to counts
-					// for each new json object get id, 
+
+					// get hash mapping ids to counts
+					// for each new json object get id,
 					// if id is in map, then increment count
 					// if not, then add it to map and set count to 1.
-					
+
 					String gameCreator = null;
 					int gameID = 0;
-										
+
 					try {
-						jObject = jArray.getJSONObject(i);						
+						jObject = jArray.getJSONObject(i);
 						gameCreator = jObject.getString("username");
 						gameID = jObject.getInt("gameID");
 
 					} catch (JSONException e) {
-						Log.e("error", e.getMessage());					
+						Log.e("error", e.getMessage());
 					}
 
 					playerMap.put(gameCreator, gameID);
-					
-					if (! IDMap.containsKey(gameID)) {
+
+					if (!IDMap.containsKey(gameID)) {
 						IDMap.put(gameID, 1);
-					} else {						
+					} else {
 						int increment = IDMap.get(gameID) + 1;
 						IDMap.put(gameID, increment);
 					}
-					
-					String gameID_str = gameID + "";									
-//					
+
+					String gameID_str = gameID + "";
+					//
 					ret.add(gameID_str);
 					ret.add(gameCreator);
 				}
@@ -183,37 +183,37 @@ public class JoinGameActivity extends Activity {
 		}
 
 		protected void onPostExecute(String result) {
-					
+
 			Log.v("IDMap", IDMap.toString());
-			
-			//initialize arrays to hold keys from IDMap and the playerMap
+
+			// initialize arrays to hold keys from IDMap and the playerMap
 			Object[] gameIDs;
 			gameIDs = IDMap.keySet().toArray();
 
 			Object[] players;
 			players = playerMap.keySet().toArray();
-			
-			//create map from IDs to players, this is the player that will show up in full in the menu
+
+			// create map from IDs to players, this is the player that will show
+			// up in full in the menu
 			HashMap<Integer, String> mainPlayers = new HashMap<Integer, String>();
-			
-			
-			// go through all of the 
-			for (int i = 0; i < gameIDs.length ; i += 1) {
-				
-				
-				
-				//establish which player name is listed on the join row.
-				//It is the first player that is associated with the current game id.
-				for (int j = 0; j < players.length; j+=1){
-					if(playerMap.get(players[j]) == gameIDs[i]) {
-						if (! mainPlayers.containsKey(gameIDs[i])) {
-							mainPlayers.put((Integer) gameIDs[i], (String) players[j]);	
-						} 						
+
+			// go through all of the
+			for (int i = 0; i < gameIDs.length; i += 1) {
+
+				// establish which player name is listed on the join row.
+				// It is the first player that is associated with the current
+				// game id.
+				for (int j = 0; j < players.length; j += 1) {
+					if (playerMap.get(players[j]) == gameIDs[i]) {
+						if (!mainPlayers.containsKey(gameIDs[i])) {
+							mainPlayers.put((Integer) gameIDs[i],
+									(String) players[j]);
+						}
 						break;
-					}						
-					
+					}
+
 				}
-				
+
 				// Get the LayoutInflator service
 				LayoutInflater inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
@@ -224,18 +224,32 @@ public class JoinGameActivity extends Activity {
 
 				TextView GameID = (TextView) newJoinRow
 						.findViewById(R.id.GameIDTextView);
-				
+
 				String id_str = gameIDs[i].toString();
 				GameID.setText(id_str);
 
 				TextView gameCreator = (TextView) newJoinRow
 						.findViewById(R.id.GameCreatorTextView);
-				
-				String player_string = mainPlayers.get(gameIDs[i]) + " + " + (IDMap.get(gameIDs[i]) - 1) + " others playing"; 
+
+				String player_string = mainPlayers.get(gameIDs[i]) + " + "
+						+ (IDMap.get(gameIDs[i]) - 1) + " others playing";
 				gameCreator.setText(player_string);
+
+				Button joinRowButton = (Button) newJoinRow
+						.findViewById(R.id.joinGameRowButton);
+				joinRowButton.setOnClickListener(new JoinClickListener(Integer
+						.parseInt(id_str)));
 
 				// Add the new components for the row to the TableLayout
 				Log.d("newJoinRow", newJoinRow.toString());
+				
+//				Can be used to add different colored lines later
+//				if (i%2 == 0) {
+//				 
+//
+//					newJoinRow.setBackgroundColor( COLOR AS AN INT GOES HERE - use 0x for hex);
+//				}
+				
 				joinScrollView.addView(newJoinRow);
 
 			}
@@ -243,5 +257,33 @@ public class JoinGameActivity extends Activity {
 		}
 
 	}
+
+	public class JoinClickListener implements OnClickListener {
+		int id;
+
+		public JoinClickListener(int id) {
+			this.id = id;
+		}
+
+		public void onClick(View v) {
+
+			Intent intent = getIntent();
+
+			Double currentLatDouble = intent.getDoubleExtra("lat", 0.0);
+			Double currentLonDouble = intent.getDoubleExtra("lon", 0.0);
+			boolean newGame = intent.getBooleanExtra("newGame", false);
+
+			int gameID = this.id;
+
+			Intent mapGame = new Intent(JoinGameActivity.this, GameMapActivity.class);
+			mapGame.putExtra("lat", currentLatDouble);
+			mapGame.putExtra("lon", currentLonDouble);
+			mapGame.putExtra("newGame", newGame);
+			mapGame.putExtra("gameID", gameID);
+			
+			startActivity(mapGame);
+		}
+	}
+
 
 }

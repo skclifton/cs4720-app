@@ -7,6 +7,9 @@ import java.io.InputStreamReader;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -20,28 +23,34 @@ import org.json.JSONObject;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.GoogleMap.InfoWindowAdapter;
+import com.google.android.gms.maps.GoogleMap.OnMarkerClickListener;
 import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
+import android.accounts.Account;
+import android.accounts.AccountManager;
 import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.LayoutInflater;
+
 import android.view.View;
-import android.webkit.WebView;
 import android.widget.ImageView;
 import android.widget.TableLayout;
 import android.widget.TextView;
 
-public class GameMapActivity extends Activity {
+public class GameMapActivity extends Activity implements OnMarkerClickListener {
 
+	int IMAGE_WIDTH = 256;
+	int IMAGE_HEIGHT = 180;
+	
 	private static final String TAG = "PHOTO";
 
 	ImageView image;
@@ -64,6 +73,8 @@ public class GameMapActivity extends Activity {
 	private TableLayout photoScrollView;
 
 	GoogleMap map;
+	private View infoWindow;
+	public HashMap images = new HashMap<Marker, Bitmap>();
 
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -89,34 +100,81 @@ public class GameMapActivity extends Activity {
 
 		if (newGame) {
 			sendURL = newGameURL + currentLat + "/" + currentLon;
-		}
-		else {
+		} else {
 			sendURL = joinGameURL + gameID + "/" + "test";
 		}
+		
+		infoWindow = getLayoutInflater().inflate(R.layout.custom_info_window, null);
 
 		map = ((MapFragment) getFragmentManager().findFragmentById(R.id.map))
 				.getMap();
+		map.setInfoWindowAdapter(new CustomInfoAdapter());
+		map.setOnMarkerClickListener(this);
+		
 		LatLng current = new LatLng(currentLatDouble, currentLonDouble);
 		Marker currentMark = map.addMarker(new MarkerOptions()
-				.position(current).title("Start"));
-		// .snippet("Kiel is cool"));
-		// .icon(BitmapDescriptorFactory
-		// .fromResource(R.drawable.ic_launcher)));
+				.position(current).title("Start").icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN)));
 
 		map.moveCamera(CameraUpdateFactory.newLatLngZoom(current, 0));
 
 		// Zoom in, animating the camera.
 		map.animateCamera(CameraUpdateFactory.zoomTo(15), 2000, null);
 
-		// TextView newImageLat = (TextView)
-		// findViewById(R.id.currentLatTextView);
-		// newImageLat.setText("Latitude " + currentLat);
-		//
-		// TextView newImageLon = (TextView)
-		// findViewById(R.id.currentLonTextView);
-		// newImageLon.setText("Longitude " + currentLon);
+		TextView player = (TextView) findViewById(R.id.playerTextView);
+		player.setText(getAccountName());
 
+		TextView photosFound = (TextView) findViewById(R.id.photosFoundTextView);
+		photosFound.setText("0");
+	
 		new MyAsyncTask().execute(sendURL);
+	}
+
+	
+	class CustomInfoAdapter implements InfoWindowAdapter {
+
+		@Override
+		public View getInfoContents(Marker m) {
+			displayView(m);
+			return infoWindow;
+		}
+
+		@Override
+		public View getInfoWindow(Marker m) {
+			return null;
+		}
+		
+	}
+	
+	public void displayView(Marker m) {
+		Bitmap b = (Bitmap) images.get(m);
+		((ImageView)infoWindow.findViewById(R.id.infoWindowImageView)).setImageBitmap(b);
+	}
+	
+	@Override
+	public boolean onMarkerClick(Marker m) {
+		return false;
+	}	
+	private String getAccountName() {
+		AccountManager manager = AccountManager.get(this);
+		Account[] accounts = manager.getAccountsByType("com.google");
+		List<String> possibleEmails = new LinkedList<String>();
+
+		for (Account account : accounts) {
+			// TODO: Check possibleEmail against an email regex or treat
+			// account.name as an email address only for certain account.type
+			// values.
+			possibleEmails.add(account.name);
+		}
+
+		if (!possibleEmails.isEmpty() && possibleEmails.get(0) != null) {
+			String email = possibleEmails.get(0);
+			String[] parts = email.split("@");
+			if (parts.length > 0 && parts[0] != null)
+				return parts[0];
+			else
+				return null;
+		} else
+			return null;
 	}
 
 	private class MyAsyncTask extends AsyncTask<String, String, String> {
@@ -206,21 +264,26 @@ public class GameMapActivity extends Activity {
 
 			return null;
 		}
-
+		
 		protected void onPostExecute(String result) {
 
 			for (int i = 0; i < ret.size() - 1; i += 2) {
 				Drawable photo = drawRet.get(i / 2);
+				Bitmap c = ((BitmapDrawable) photo).getBitmap();
+				Bitmap b = c.createScaledBitmap(c, IMAGE_WIDTH, IMAGE_HEIGHT, true);
+
+				
 				double lat = ret.get(i);
 				double lon = ret.get(i + 1);
 
 				LatLng photoPosition = new LatLng(lat, lon);
-				
+
 				Marker currentMark = map
-						.addMarker(new MarkerOptions()
-								.position(photoPosition)
-								.icon(BitmapDescriptorFactory
-										.defaultMarker(BitmapDescriptorFactory.HUE_AZURE)));
+						.addMarker(new MarkerOptions().position(photoPosition)
+								.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE)));
+				
+				images.put(currentMark, b);
+				// .icon(BitmapDescriptorFactory.fromBitmap(cS)));
 
 			}
 
@@ -258,4 +321,6 @@ public class GameMapActivity extends Activity {
 		}
 
 	}
+
+
 }

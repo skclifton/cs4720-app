@@ -5,5 +5,10 @@
     <dimen name="activity_vertical_margin">16dp</dimen>
     <dimen name="new_game_text_size">75sp</dimen>
     <dimen name="pad">5dp</dimen>
+    <dimen name="pad10dp">10dp</dimen>
+    <dimen name="pad20dp">20dp</dimen>
+    <dimen name="large_text">100sp</dimen>
+    <dimen name="pad100dp">100dp</dimen>
+    <dimen name="pad300dp">300dp</dimen>
 
 </resources>

@@ -164,6 +164,7 @@ containing a value of this type.
         public static final int zOrderOnTop=0x7f010010;
     }
     public static final class color {
+        public static final int blue=0x7f04000e;
         public static final int common_action_bar_splitter=0x7f040009;
         /**  Sign-in Button Colors 
          */
@@ -176,8 +177,13 @@ containing a value of this type.
         public static final int common_signin_btn_light_text_disabled=0x7f040006;
         public static final int common_signin_btn_light_text_focused=0x7f040007;
         public static final int common_signin_btn_light_text_pressed=0x7f040005;
-        public static final int common_signin_btn_text_dark=0x7f04000a;
-        public static final int common_signin_btn_text_light=0x7f04000b;
+        public static final int common_signin_btn_text_dark=0x7f040010;
+        public static final int common_signin_btn_text_light=0x7f040011;
+        public static final int cream=0x7f04000a;
+        public static final int dark_orange=0x7f04000b;
+        public static final int gray=0x7f04000f;
+        public static final int green=0x7f04000d;
+        public static final int light_orange=0x7f04000c;
     }
     public static final class dimen {
         /**  Default screen margins, per the Android Design guidelines. 
@@ -188,8 +194,13 @@ containing a value of this type.
          */
         public static final int activity_horizontal_margin=0x7f080000;
         public static final int activity_vertical_margin=0x7f080001;
+        public static final int large_text=0x7f080006;
         public static final int new_game_text_size=0x7f080002;
         public static final int pad=0x7f080003;
+        public static final int pad100dp=0x7f080007;
+        public static final int pad10dp=0x7f080004;
+        public static final int pad20dp=0x7f080005;
+        public static final int pad300dp=0x7f080008;
     }
     public static final class drawable {
         public static final int asparagus=0x7f020000;
@@ -221,33 +232,44 @@ containing a value of this type.
         public static final int ic_plusone_small_off_client=0x7f02001a;
         public static final int ic_plusone_standard_off_client=0x7f02001b;
         public static final int ic_plusone_tall_off_client=0x7f02001c;
+        public static final int test=0x7f02001d;
     }
     public static final class id {
-        public static final int GameCreatorTextView=0x7f050018;
-        public static final int GameIDTextView=0x7f050017;
-        public static final int TableRow=0x7f050013;
-        public static final int action_settings=0x7f05001a;
-        public static final int currentLatTextView=0x7f05000a;
-        public static final int currentLocationRow=0x7f050008;
-        public static final int currentLocationTextView=0x7f050009;
-        public static final int currentLonTextView=0x7f05000b;
+        public static final int GameCreatorTextView=0x7f050022;
+        public static final int GameIDTextView=0x7f050021;
+        public static final int TableRow=0x7f05001d;
+        public static final int action_settings=0x7f050024;
+        public static final int currentLatTextView=0x7f05000e;
+        public static final int currentLocationRow=0x7f05000c;
+        public static final int currentLocationTextView=0x7f05000d;
+        public static final int currentLonTextView=0x7f05000f;
+        public static final int gameIDTitleTextView=0x7f050013;
+        public static final int gameTitleTextView=0x7f05001a;
         public static final int hybrid=0x7f050004;
-        public static final int image=0x7f050014;
-        public static final int joinGameButton=0x7f050012;
-        public static final int joinGameRowButton=0x7f050019;
-        public static final int joinScrollView=0x7f05000f;
-        public static final int joinScrollViewTable=0x7f050010;
-        public static final int joinTableRow=0x7f05000e;
-        public static final int latitudeTextView=0x7f050015;
-        public static final int longitudeTextView=0x7f050016;
-        public static final int map=0x7f050007;
-        public static final int newGameButton=0x7f050011;
+        public static final int image=0x7f05001e;
+        public static final int infoWindowImageView=0x7f05001c;
+        public static final int joinGameButton=0x7f050019;
+        public static final int joinGameRowButton=0x7f050023;
+        public static final int joinGameTitleTextView=0x7f050015;
+        public static final int joinScrollViewTable=0x7f050017;
+        public static final int joinTableRow=0x7f050016;
+        public static final int joinTableRowTitles=0x7f050012;
+        public static final int latitudeTextView=0x7f05001f;
+        public static final int linearLayout=0x7f05001b;
+        public static final int longitudeTextView=0x7f050020;
+        public static final int map=0x7f05000b;
+        public static final int newGameButton=0x7f050018;
         public static final int none=0x7f050000;
         public static final int normal=0x7f050001;
-        public static final int photoScrollView=0x7f05000c;
-        public static final int photoScrollViewTable=0x7f05000d;
-        public static final int photosFound=0x7f050006;
+        public static final int photoScrollView=0x7f050010;
+        public static final int photoScrollViewTable=0x7f050011;
+        public static final int photosFound=0x7f050008;
+        public static final int photosFoundLabelTextView=0x7f050009;
+        public static final int photosFoundTextView=0x7f05000a;
         public static final int player=0x7f050005;
+        public static final int playerLabelTextView=0x7f050006;
+        public static final int playerTextView=0x7f050007;
+        public static final int playersTitleTextView=0x7f050014;
         public static final int satellite=0x7f050002;
         public static final int terrain=0x7f050003;
     }
@@ -259,8 +281,9 @@ containing a value of this type.
         public static final int activity_game_map=0x7f030001;
         public static final int activity_join_game=0x7f030002;
         public static final int activity_main=0x7f030003;
-        public static final int game_map_row=0x7f030004;
-        public static final int join_game_row=0x7f030005;
+        public static final int custom_info_window=0x7f030004;
+        public static final int game_map_row=0x7f030005;
+        public static final int join_game_row=0x7f030006;
     }
     public static final class menu {
         public static final int main=0x7f0a0000;
@@ -363,9 +386,15 @@ containing a value of this type.
          */
         public static final int common_signin_button_text_long=0x7f060013;
         public static final int current_location=0x7f06001e;
+        public static final int game_ID=0x7f060023;
+        public static final int game_title=0x7f060022;
         public static final int hello_world=0x7f06001c;
         public static final int join_game_button=0x7f06001f;
+        public static final int join_game_title=0x7f060025;
         public static final int new_game_button=0x7f06001d;
+        public static final int photos_found_label=0x7f060021;
+        public static final int player_label=0x7f060020;
+        public static final int players_title=0x7f060024;
     }
     public static final class style {
         /** 

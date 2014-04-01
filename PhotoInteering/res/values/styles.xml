@@ -23,5 +23,11 @@
         <item name="android:layout_height">wrap_content</item>
         <item name="android:padding">16dp</item>
     </style>
+    <color name="cream">#F2F0EE</color>
+    <color name="dark_orange">#F29D24</color>
+    <color name="light_orange">#EFCF66</color>
+    <color name="green">#C9D9A8</color>
+    <color name="blue">#8BB5F4</color>
+    <color name="gray">#565655</color>
 
 </resources>

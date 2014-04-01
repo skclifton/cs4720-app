@@ -2,21 +2,51 @@
 <TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
     android:layout_height="match_parent"
-    android:stretchColumns="1" >
+    android:background="@drawable/test"
+    android:paddingLeft="@dimen/pad300dp"
+    android:paddingRight="@dimen/pad300dp"
+    android:paddingTop="@dimen/pad20dp"
+    android:showDividers="beginning"
+    android:shrinkColumns="0"
+    android:stretchColumns="1,2" >
+
+    <TableRow
+        android:id="@+id/joinTableRowTitles"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="top" >
+
+        <TextView
+            android:id="@+id/gameIDTitleTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="@string/game_ID"
+            android:textAppearance="?android:attr/textAppearanceLarge" />
+
+        <TextView
+            android:id="@+id/playersTitleTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="@string/players_title"
+            android:textAppearance="?android:attr/textAppearanceLarge" />
+
+        <TextView
+            android:id="@+id/joinGameTitleTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="@string/join_game_title"
+            android:textAppearance="?android:attr/textAppearanceLarge" />
+    </TableRow>
 
     <TableRow
         android:id="@+id/joinTableRow"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
+        android:background="@color/cream"
         android:gravity="center_horizontal" >
-
-        <ScrollView
-            android:id="@+id/joinScrollView"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:layout_span="2"
-            android:fillViewport="true"
-            android:padding="5dp" >
 
             <TableLayout
                 android:id="@+id/joinScrollViewTable"
@@ -25,7 +55,6 @@
                 android:padding="5dp"
                 android:stretchColumns="yes" >
             </TableLayout>
-        </ScrollView>
     </TableRow>
 
 </TableLayout>
