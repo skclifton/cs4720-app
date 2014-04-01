@@ -232,13 +232,12 @@ containing a value of this type.
         public static final int ic_plusone_small_off_client=0x7f02001a;
         public static final int ic_plusone_standard_off_client=0x7f02001b;
         public static final int ic_plusone_tall_off_client=0x7f02001c;
-        public static final int test=0x7f02001d;
     }
     public static final class id {
-        public static final int GameCreatorTextView=0x7f050022;
-        public static final int GameIDTextView=0x7f050021;
-        public static final int TableRow=0x7f05001d;
-        public static final int action_settings=0x7f050024;
+        public static final int GameCreatorTextView=0x7f050023;
+        public static final int GameIDTextView=0x7f050022;
+        public static final int TableRow=0x7f05001e;
+        public static final int action_settings=0x7f050025;
         public static final int currentLatTextView=0x7f05000e;
         public static final int currentLocationRow=0x7f05000c;
         public static final int currentLocationTextView=0x7f05000d;
@@ -246,17 +245,16 @@ containing a value of this type.
         public static final int gameIDTitleTextView=0x7f050013;
         public static final int gameTitleTextView=0x7f05001a;
         public static final int hybrid=0x7f050004;
-        public static final int image=0x7f05001e;
-        public static final int infoWindowImageView=0x7f05001c;
+        public static final int image=0x7f05001f;
+        public static final int infoWindowImageView=0x7f05001b;
         public static final int joinGameButton=0x7f050019;
-        public static final int joinGameRowButton=0x7f050023;
+        public static final int joinGameRowButton=0x7f050024;
         public static final int joinGameTitleTextView=0x7f050015;
         public static final int joinScrollViewTable=0x7f050017;
         public static final int joinTableRow=0x7f050016;
         public static final int joinTableRowTitles=0x7f050012;
-        public static final int latitudeTextView=0x7f05001f;
-        public static final int linearLayout=0x7f05001b;
-        public static final int longitudeTextView=0x7f050020;
+        public static final int latitudeTextView=0x7f050020;
+        public static final int longitudeTextView=0x7f050021;
         public static final int map=0x7f05000b;
         public static final int newGameButton=0x7f050018;
         public static final int none=0x7f050000;
@@ -271,7 +269,9 @@ containing a value of this type.
         public static final int playerTextView=0x7f050007;
         public static final int playersTitleTextView=0x7f050014;
         public static final int satellite=0x7f050002;
+        public static final int snippet=0x7f05001d;
         public static final int terrain=0x7f050003;
+        public static final int title=0x7f05001c;
     }
     public static final class integer {
         public static final int google_play_services_version=0x7f070000;
