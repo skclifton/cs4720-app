@@ -62,6 +62,7 @@ public class GameMapActivity extends Activity implements OnMarkerClickListener {
 	TextView longitudeTextView;
 	ArrayList<Double> ret = new ArrayList<Double>();
 	ArrayList<Drawable> drawRet = new ArrayList<Drawable>();
+	ArrayList<String> playersAndScores = new ArrayList<String>();
 
 	static final String KEY_PHOTO_URL = "url";
 	static final String KEY_PHOTO_LAT = "lat";
@@ -73,6 +74,8 @@ public class GameMapActivity extends Activity implements OnMarkerClickListener {
 
 	String newGameURL = "http://plato.cs.virginia.edu/~cs4720s14asparagus/new_game/";
 	String joinGameURL = "http://plato.cs.virginia.edu/~cs4720s14asparagus/join_game/";
+	String getScoresURL = "http://plato.cs.virginia.edu/~cs4720s14asparagus/get_scores/";
+	String getNewGameURL = "http://plato.cs.virginia.edu/~cs4720s14asparagus/get_recent_game/";
 	
 	private TableLayout gamePlayersScrollView;
 
@@ -102,11 +105,11 @@ public class GameMapActivity extends Activity implements OnMarkerClickListener {
 		String currentLon = Double.toString(currentLonDouble);
 		String gpsCoords = intent.getStringExtra(MainActivity.GPS_COORDS);
 		boolean newGame = intent.getBooleanExtra("newGame", true);
-		int gameID = intent.getIntExtra("gameID", 0);
+		int  gameID = intent.getIntExtra("gameID", 0);
 		String sendURL = "";
 
 		if (newGame) {
-			sendURL = newGameURL + currentLat + "/" + currentLon;
+			sendURL = newGameURL + currentLat + "/" + currentLon + "/" + getAccountName();
 		} else {
 			sendURL = joinGameURL + gameID + "/" + "test";
 		}
@@ -137,34 +140,22 @@ public class GameMapActivity extends Activity implements OnMarkerClickListener {
 		TextView photosFound = (TextView) findViewById(R.id.photosFoundTextView);
 		photosFound.setText("0");
 		
-		updatePlayers();
+		
+		updatePlayers(gameID, newGame);
 
 		new MyAsyncTask().execute(sendURL);
 	}
 
-	public void updatePlayers() {
+	public void updatePlayers(int gameID, boolean isNew) {
 		
-		for (int i = 0; i < 50; i++) {
-			// Get the LayoutInflator service
-			LayoutInflater inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-
-			// Use the inflater to inflate a join row from
-			View newGamePlayerRow = inflater.inflate(R.layout.game_player_row, null);
-
-			TextView playerName = (TextView) newGamePlayerRow
-					.findViewById(R.id.gamePlayerName);
-
-			TextView playerScore = (TextView) newGamePlayerRow
-					.findViewById(R.id.gamePlayerScore);
-			playerName.setText(Integer.toString(i + 1));
-			playerScore.setText(Integer.toString(i % 10));
-			Log.d("newGamePlayerRow", newGamePlayerRow.toString());
-			gamePlayersScrollView.addView(newGamePlayerRow);
+		String sendURL = "";
+		String newGameURL = "";
+		if (isNew) {						
+			newGameURL =  getNewGameURL + "test";			
+		} else {		
+			sendURL =  getScoresURL + gameID;			
 		}
-
-		// Add the new components for the row to the TableLayout
-
-
+		new MyUpdatePlayersTask().execute(newGameURL, sendURL);
 	}
 
 	class CustomInfoAdapter implements InfoWindowAdapter {
@@ -215,6 +206,181 @@ public class GameMapActivity extends Activity implements OnMarkerClickListener {
 		} else
 			return null;
 	}
+
+	
+	private class MyUpdatePlayersTask extends AsyncTask<String, String, String> {
+
+		@Override
+		protected String doInBackground(String... args) {
+			
+			String SendURL1 = args[0];			
+			int id = -1;
+			if (!SendURL1.equals("")) {
+				
+				DefaultHttpClient httpclient = new DefaultHttpClient(
+						new BasicHttpParams());
+
+				HttpPost httppost = new HttpPost(SendURL1);
+				httppost.setHeader("Content-type", "application/json");
+
+				InputStream inputStream = null;
+
+				String result = null;
+
+				try {
+					HttpResponse response = httpclient.execute(httppost);
+					HttpEntity entity = response.getEntity();
+					inputStream = entity.getContent();
+					BufferedReader reader = new BufferedReader(
+							new InputStreamReader(inputStream, "UTF-8"), 8);
+					StringBuilder sb = new StringBuilder();
+
+					String line = null;
+					while ((line = reader.readLine()) != null) {
+						sb.append(line + "\n");
+					}
+					result = sb.toString();
+					Log.d("result", result);
+				} catch (Exception e) {
+				} finally {
+					try {
+						if (inputStream != null)
+							inputStream.close();
+					} catch (Exception squish) {
+					}
+				}
+//
+//				JSONArray jArray = null;
+//				try {
+//					Log.d("jArray", result.toString());
+//
+//					jArray = new JSONArray(result);
+//				} catch (JSONException e1) {
+//					// TODO Auto-generated catch block
+//					e1.printStackTrace();
+//				}		
+				
+				
+				JSONObject jObject;
+				try {
+					jObject = new JSONObject(result.toString());
+					id = jObject.getInt("gameID");							
+					Log.d("id", id + "");
+				} catch (JSONException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}										
+					
+				// Add the new components for the row to the TableLayout
+
+												
+				
+			}
+			
+			String sendURL = null;
+			if (id >= 0) {
+				sendURL = getScoresURL + id;
+			} else {
+				sendURL = args[1];
+			}			
+			
+			Log.d("url",sendURL);
+			DefaultHttpClient httpclient = new DefaultHttpClient(
+					new BasicHttpParams());
+
+			HttpPost httppost = new HttpPost(sendURL);
+			httppost.setHeader("Content-type", "application/json");
+
+			InputStream inputStream = null;
+
+			String result = null;
+
+			try {
+				HttpResponse response = httpclient.execute(httppost);
+				HttpEntity entity = response.getEntity();
+				inputStream = entity.getContent();
+				BufferedReader reader = new BufferedReader(
+						new InputStreamReader(inputStream, "UTF-8"), 8);
+				StringBuilder sb = new StringBuilder();
+
+				String line = null;
+				while ((line = reader.readLine()) != null) {
+					sb.append(line + "\n");
+				}
+				result = sb.toString();
+				Log.d("result", result);
+			} catch (Exception e) {
+			} finally {
+				try {
+					if (inputStream != null)
+						inputStream.close();
+				} catch (Exception squish) {
+				}
+			}
+
+			JSONArray jArray = null;
+			try {
+				Log.d("jArray", result.toString());
+
+				jArray = new JSONArray(result);
+			} catch (JSONException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+			
+			playersAndScores.clear();
+
+			if (jArray != null) {
+				for (int i = 0; i < jArray.length(); i++) {
+					JSONObject jObject;
+					String user = null;
+					int score = 0;
+					try {
+						jObject = jArray.getJSONObject(i);
+						user = jObject.getString("username");
+						score = jObject.getInt("score");
+						
+						playersAndScores.add(user);
+						playersAndScores.add(Integer.toString(score));					
+					} catch (JSONException e) {
+						e.printStackTrace();
+					}
+				}
+				
+			// Add the new components for the row to the TableLayout
+
+			}
+			return null;
+		}
+		
+		protected void onPostExecute(String result) {
+
+			
+			for (int i = 0; i < playersAndScores.size() - 1; i += 2) {
+				// Get the LayoutInflator service
+				LayoutInflater inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+	
+				// Use the inflater to inflate a join row from
+				View newGamePlayerRow = inflater.inflate(R.layout.game_player_row, null);
+	
+				TextView playerName = (TextView) newGamePlayerRow
+						.findViewById(R.id.gamePlayerName);
+	
+				TextView playerScore = (TextView) newGamePlayerRow
+						.findViewById(R.id.gamePlayerScore);
+				playerName.setText(playersAndScores.get(i));
+				playerScore.setText(playersAndScores.get(i+1));
+				Log.d("newGamePlayerRow", newGamePlayerRow.toString());
+				gamePlayersScrollView.addView(newGamePlayerRow);
+			}
+
+			
+
+		}
+		
+	}
+	
+	
 
 	private class MyAsyncTask extends AsyncTask<String, String, String> {
 
@@ -360,6 +526,7 @@ public class GameMapActivity extends Activity implements OnMarkerClickListener {
 			// }
 
 		}
+		
 
 	}
 
