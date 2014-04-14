@@ -29,10 +29,12 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.photointeering.JoinGameActivity.JoinClickListener;
 
 import android.accounts.Account;
 import android.accounts.AccountManager;
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
@@ -41,7 +43,9 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 
+import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TableLayout;
 import android.widget.TextView;
@@ -50,7 +54,7 @@ public class GameMapActivity extends Activity implements OnMarkerClickListener {
 
 	int IMAGE_WIDTH = 256;
 	int IMAGE_HEIGHT = 180;
-	
+
 	private static final String TAG = "PHOTO";
 
 	ImageView image;
@@ -69,8 +73,10 @@ public class GameMapActivity extends Activity implements OnMarkerClickListener {
 
 	String newGameURL = "http://plato.cs.virginia.edu/~cs4720s14asparagus/new_game/";
 	String joinGameURL = "http://plato.cs.virginia.edu/~cs4720s14asparagus/join_game/";
+	
+	private TableLayout gamePlayersScrollView;
 
-	private TableLayout photoScrollView;
+	//private TableLayout photoScrollView;
 
 	GoogleMap map;
 	private View infoWindow;
@@ -81,7 +87,8 @@ public class GameMapActivity extends Activity implements OnMarkerClickListener {
 		setContentView(R.layout.activity_game);
 		// setContentView(R.layout.activity_game_map);
 
-		photoScrollView = (TableLayout) findViewById(R.id.photoScrollViewTable);
+		//photoScrollView = (TableLayout) findViewById(R.id.photoScrollViewTable);
+		gamePlayersScrollView = (TableLayout) findViewById(R.id.gamePlayersTableLayout);
 
 		Intent intent = getIntent();
 		image = (ImageView) findViewById(R.id.image);
@@ -103,17 +110,21 @@ public class GameMapActivity extends Activity implements OnMarkerClickListener {
 		} else {
 			sendURL = joinGameURL + gameID + "/" + "test";
 		}
-		
-		infoWindow = getLayoutInflater().inflate(R.layout.custom_info_window, null);
+
+		infoWindow = getLayoutInflater().inflate(R.layout.custom_info_window,
+				null);
 
 		map = ((MapFragment) getFragmentManager().findFragmentById(R.id.map))
 				.getMap();
 		map.setInfoWindowAdapter(new CustomInfoAdapter());
 		map.setOnMarkerClickListener(this);
-		
+
 		LatLng current = new LatLng(currentLatDouble, currentLonDouble);
 		Marker currentMark = map.addMarker(new MarkerOptions()
-				.position(current).title("Start").icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN)));
+				.position(current)
+				.title("Start")
+				.icon(BitmapDescriptorFactory
+						.defaultMarker(BitmapDescriptorFactory.HUE_GREEN)));
 
 		map.moveCamera(CameraUpdateFactory.newLatLngZoom(current, 0));
 
@@ -125,11 +136,37 @@ public class GameMapActivity extends Activity implements OnMarkerClickListener {
 
 		TextView photosFound = (TextView) findViewById(R.id.photosFoundTextView);
 		photosFound.setText("0");
-	
+		
+		updatePlayers();
+
 		new MyAsyncTask().execute(sendURL);
 	}
 
-	
+	public void updatePlayers() {
+		
+		for (int i = 0; i < 50; i++) {
+			// Get the LayoutInflator service
+			LayoutInflater inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+
+			// Use the inflater to inflate a join row from
+			View newGamePlayerRow = inflater.inflate(R.layout.game_player_row, null);
+
+			TextView playerName = (TextView) newGamePlayerRow
+					.findViewById(R.id.gamePlayerName);
+
+			TextView playerScore = (TextView) newGamePlayerRow
+					.findViewById(R.id.gamePlayerScore);
+			playerName.setText(Integer.toString(i + 1));
+			playerScore.setText(Integer.toString(i % 10));
+			Log.d("newGamePlayerRow", newGamePlayerRow.toString());
+			gamePlayersScrollView.addView(newGamePlayerRow);
+		}
+
+		// Add the new components for the row to the TableLayout
+
+
+	}
+
 	class CustomInfoAdapter implements InfoWindowAdapter {
 
 		@Override
@@ -142,18 +179,20 @@ public class GameMapActivity extends Activity implements OnMarkerClickListener {
 		public View getInfoWindow(Marker m) {
 			return null;
 		}
-		
+
 	}
-	
+
 	public void displayView(Marker m) {
 		Bitmap b = (Bitmap) images.get(m);
-		((ImageView)infoWindow.findViewById(R.id.infoWindowImageView)).setImageBitmap(b);
+		((ImageView) infoWindow.findViewById(R.id.infoWindowImageView))
+				.setImageBitmap(b);
 	}
-	
+
 	@Override
 	public boolean onMarkerClick(Marker m) {
 		return false;
-	}	
+	}
+
 	private String getAccountName() {
 		AccountManager manager = AccountManager.get(this);
 		Account[] accounts = manager.getAccountsByType("com.google");
@@ -264,24 +303,26 @@ public class GameMapActivity extends Activity implements OnMarkerClickListener {
 
 			return null;
 		}
-		
+
 		protected void onPostExecute(String result) {
 
 			for (int i = 0; i < ret.size() - 1; i += 2) {
 				Drawable photo = drawRet.get(i / 2);
 				Bitmap c = ((BitmapDrawable) photo).getBitmap();
-				Bitmap b = c.createScaledBitmap(c, IMAGE_WIDTH, IMAGE_HEIGHT, true);
+				Bitmap b = c.createScaledBitmap(c, IMAGE_WIDTH, IMAGE_HEIGHT,
+						true);
 
-				
 				double lat = ret.get(i);
 				double lon = ret.get(i + 1);
 
 				LatLng photoPosition = new LatLng(lat, lon);
 
 				Marker currentMark = map
-						.addMarker(new MarkerOptions().position(photoPosition)
-								.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE)));
-				
+						.addMarker(new MarkerOptions()
+								.position(photoPosition)
+								.icon(BitmapDescriptorFactory
+										.defaultMarker(BitmapDescriptorFactory.HUE_AZURE)));
+
 				images.put(currentMark, b);
 				// .icon(BitmapDescriptorFactory.fromBitmap(cS)));
 
@@ -321,6 +362,5 @@ public class GameMapActivity extends Activity implements OnMarkerClickListener {
 		}
 
 	}
-
 
 }
