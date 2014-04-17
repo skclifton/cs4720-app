@@ -13,5 +13,7 @@
     <string name="game_ID">Game ID</string>
     <string name="players_title">Players</string>
     <string name="join_game_title">Join Game</string>
+    <string name="joinGameLabel">Join Game</string>
+    <string name="loading">loading...</string>
 
 </resources>

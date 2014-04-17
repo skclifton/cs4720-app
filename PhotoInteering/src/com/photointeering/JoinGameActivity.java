@@ -18,6 +18,8 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import com.photointeering.R.color;
+
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
@@ -244,10 +246,11 @@ public class JoinGameActivity extends Activity {
 				Log.d("newJoinRow", newJoinRow.toString());
 				
 //				Can be used to add different colored lines later
-//				if (i%2 == 0) {
-//				 
-//
-//					newJoinRow.setBackgroundColor( COLOR AS AN INT GOES HERE - use 0x for hex);
+//				if (i%2 == 1) {
+//					newJoinRow.setBackgroundColor(color.dark_cream);
+//				}
+//				else {
+//					newJoinRow.setBackgroundColor(color.cream);
 //				}
 				
 				joinScrollView.addView(newJoinRow);

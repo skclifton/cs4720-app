@@ -15,7 +15,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="top"
-        android:background="@color/dark_cream" >
+        android:background="@color/dark_cream"
+        android:padding="@dimen/pad10dp" >
 
         <TextView
             android:id="@+id/gameIDTitleTextView"
@@ -36,11 +37,11 @@
             android:textColor="@color/gray" />
 
         <TextView
-            android:id="@+id/joinGameTitleTextView"
+            android:id="@+id/textView1"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:gravity="right|center_vertical"
-            android:text="@string/join_game_title"
+            android:gravity="center"
+            android:text="@string/joinGameLabel"
             android:textAppearance="?android:attr/textAppearanceLarge"
             android:textColor="@color/gray" />
 
@@ -49,7 +50,8 @@
     <ScrollView
         android:id="@+id/joinTableScrollView"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content" >
+        android:layout_height="match_parent"
+        android:layout_marginBottom="@dimen/pad20dp" >
 
         <TableLayout
             android:id="@+id/joinScrollViewTable"
