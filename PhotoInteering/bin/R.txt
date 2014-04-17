@@ -94,8 +94,8 @@ int id joinGameButton 0x7f05001b
 int id joinGameRowButton 0x7f050028
 int id joinGameTitleTextView 0x7f050017
 int id joinScrollViewTable 0x7f050019
-int id joinTableRow 0x7f050018
 int id joinTableRowTitles 0x7f050014
+int id joinTableScrollView 0x7f050018
 int id latitudeTextView 0x7f050022
 int id longitudeTextView 0x7f050023
 int id map 0x7f05000d

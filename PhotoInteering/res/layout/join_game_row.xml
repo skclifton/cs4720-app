@@ -2,7 +2,8 @@
 <TableRow xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/TableRow"
     android:layout_width="match_parent"
-    android:layout_height="match_parent" >
+    android:layout_height="match_parent"
+    android:background="@color/cream" >
 
     <TextView
         android:id="@+id/GameIDTextView"
@@ -11,7 +12,8 @@
         android:layout_span="1"
         android:layout_weight="1"
         android:paddingRight="@dimen/pad20dp"
-        android:text="Latitude" />
+        android:text="Latitude"
+        android:textColor="@color/gray" />
 
     <TextView
         android:id="@+id/GameCreatorTextView"
@@ -22,12 +24,15 @@
         android:paddingLeft="@dimen/pad20dp"
         android:paddingRight="@dimen/pad20dp"
         android:paddingTop="@dimen/pad20dp"
-        android:text="Longitude" />
+        android:text="Longitude"
+        android:textColor="@color/gray" />
     
     <Button
         android:id="@+id/joinGameRowButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/join_game_button" />
+        android:gravity="center"
+        android:text="@string/join_game_button"
+        android:textColor="@color/gray" />
 
 </TableRow>

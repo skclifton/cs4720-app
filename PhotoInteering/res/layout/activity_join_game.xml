@@ -2,7 +2,7 @@
 <TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
     android:layout_height="match_parent"
-    android:background="@color/cream"
+    android:background="@drawable/map"
     android:paddingLeft="@dimen/pad300dp"
     android:paddingRight="@dimen/pad300dp"
     android:paddingTop="@dimen/pad20dp"
@@ -14,7 +14,8 @@
         android:id="@+id/joinTableRowTitles"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="top" >
+        android:layout_gravity="top"
+        android:background="@color/dark_cream" >
 
         <TextView
             android:id="@+id/gameIDTitleTextView"
@@ -22,7 +23,8 @@
             android:layout_height="wrap_content"
             android:gravity="center"
             android:text="@string/game_ID"
-            android:textAppearance="?android:attr/textAppearanceLarge" />
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:textColor="@color/gray" />
 
         <TextView
             android:id="@+id/playersTitleTextView"
@@ -30,31 +32,33 @@
             android:layout_height="wrap_content"
             android:gravity="center"
             android:text="@string/players_title"
-            android:textAppearance="?android:attr/textAppearanceLarge" />
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:textColor="@color/gray" />
 
         <TextView
             android:id="@+id/joinGameTitleTextView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:gravity="center"
+            android:gravity="right|center_vertical"
             android:text="@string/join_game_title"
-            android:textAppearance="?android:attr/textAppearanceLarge" />
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:textColor="@color/gray" />
+
     </TableRow>
 
-    <TableRow
-        android:id="@+id/joinTableRow"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:background="@color/cream"
-        android:gravity="center_horizontal" >
+    <ScrollView
+        android:id="@+id/joinTableScrollView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" >
 
-            <TableLayout
-                android:id="@+id/joinScrollViewTable"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:padding="5dp"
-                android:stretchColumns="yes" >
-            </TableLayout>
-    </TableRow>
+        <TableLayout
+            android:id="@+id/joinScrollViewTable"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="5dp"
+            android:stretchColumns="yes" >
+        </TableLayout>
+
+    </ScrollView>
 
 </TableLayout>

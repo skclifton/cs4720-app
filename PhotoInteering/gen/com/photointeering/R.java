@@ -257,8 +257,8 @@ containing a value of this type.
         public static final int joinGameRowButton=0x7f050028;
         public static final int joinGameTitleTextView=0x7f050017;
         public static final int joinScrollViewTable=0x7f050019;
-        public static final int joinTableRow=0x7f050018;
         public static final int joinTableRowTitles=0x7f050014;
+        public static final int joinTableScrollView=0x7f050018;
         public static final int latitudeTextView=0x7f050022;
         public static final int longitudeTextView=0x7f050023;
         public static final int map=0x7f05000d;
