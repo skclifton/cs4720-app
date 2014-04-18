@@ -8,6 +8,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Map;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -49,8 +50,7 @@ public class JoinGameActivity extends Activity {
 	ArrayList<Drawable> drawRet = new ArrayList<Drawable>();
 
 	// map to keep count of each gameID, as well as to which game players belong
-	HashMap<Integer, Integer> IDMap;
-	HashMap<String, Integer> playerMap;
+	HashMap<Integer, Tuple> IDMap;	
 
 	static final String KEY_PHOTO_URL = "url";
 	static final String KEY_PHOTO_LAT = "lat";
@@ -141,44 +141,35 @@ public class JoinGameActivity extends Activity {
 				e1.printStackTrace();
 			}
 
-			IDMap = new HashMap<Integer, Integer>();
-			playerMap = new HashMap<String, Integer>();
+			IDMap = new HashMap<Integer, Tuple>();			
 
 			if (jArray != null) {
 				for (int i = 0; i < jArray.length(); i++) {
 					JSONObject jObject;
-
-					// get hash mapping ids to counts
-					// for each new json object get id,
-					// if id is in map, then increment count
-					// if not, then add it to map and set count to 1.
 
 					String gameCreator = null;
 					int gameID = 0;
 
 					try {
 						jObject = jArray.getJSONObject(i);
-						gameCreator = jObject.getString("username");
+						gameCreator = jObject.getString("username");						
 						gameID = jObject.getInt("gameID");
 
 					} catch (JSONException e) {
 						Log.e("error", e.getMessage());
-					}
-
-					playerMap.put(gameCreator, gameID);
+					}					
 
 					if (!IDMap.containsKey(gameID)) {
-						IDMap.put(gameID, 1);
+						Tuple t = new Tuple(gameCreator, 1);						
+						IDMap.put(gameID, t);
 					} else {
-						int increment = IDMap.get(gameID) + 1;
-						IDMap.put(gameID, increment);
-					}
-
-					String gameID_str = gameID + "";
-					//
-					ret.add(gameID_str);
-					ret.add(gameCreator);
+						Tuple t = IDMap.get(gameID);
+						t.increment_players();
+						IDMap.put(gameID, t);
+					}					
+					
 				}
+							
 			}
 
 			return null;
@@ -188,35 +179,14 @@ public class JoinGameActivity extends Activity {
 
 			Log.v("IDMap", IDMap.toString());
 
-			// initialize arrays to hold keys from IDMap and the playerMap
-			Object[] gameIDs;
-			gameIDs = IDMap.keySet().toArray();
-
-			Object[] players;
-			players = playerMap.keySet().toArray();
-
 			// create map from IDs to players, this is the player that will show
 			// up in full in the menu
 			HashMap<Integer, String> mainPlayers = new HashMap<Integer, String>();
-
-			// go through all of the
-			for (int i = 0; i < gameIDs.length; i += 1) {
-
-				// establish which player name is listed on the join row.
-				// It is the first player that is associated with the current
-				// game id.
-				for (int j = 0; j < players.length; j += 1) {
-					if (playerMap.get(players[j]) == gameIDs[i]) {
-						if (!mainPlayers.containsKey(gameIDs[i])) {
-							mainPlayers.put((Integer) gameIDs[i],
-									(String) players[j]);
-						}
-						break;
-					}
-
-				}
-
-				// Get the LayoutInflator service
+			
+			for (Map.Entry<Integer,Tuple> entry : IDMap.entrySet()) {
+			    System.out.println(entry.getKey() + " " + entry.getValue());
+			    
+			 // Get the LayoutInflator service
 				LayoutInflater inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
 				// Use the inflater to inflate a join row from
@@ -227,14 +197,19 @@ public class JoinGameActivity extends Activity {
 				TextView GameID = (TextView) newJoinRow
 						.findViewById(R.id.GameIDTextView);
 
-				String id_str = gameIDs[i].toString();
+				String id_str = entry.getKey().toString();
+				
 				GameID.setText(id_str);
-
+				
 				TextView gameCreator = (TextView) newJoinRow
 						.findViewById(R.id.GameCreatorTextView);
 
-				String player_string = mainPlayers.get(gameIDs[i]) + " + "
-						+ (IDMap.get(gameIDs[i]) - 1) + " others playing";
+				String displayedPlayer = entry.getValue().getGameOwner();
+				int num_in_game = entry.getValue().getNumPlayers();
+				
+				String player_string = displayedPlayer + " + "
+						+ (num_in_game - 1) + " others playing";
+				
 				gameCreator.setText(player_string);
 
 				Button joinRowButton = (Button) newJoinRow
@@ -256,6 +231,7 @@ public class JoinGameActivity extends Activity {
 				joinScrollView.addView(newJoinRow);
 
 			}
+			
 
 		}
 
