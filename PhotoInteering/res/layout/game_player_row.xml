@@ -11,7 +11,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:paddingRight="@dimen/pad20dp"
-        android:text="Username"
+        android:text="@string/player"
         android:textAppearance="?android:attr/textAppearanceLarge"
         android:textColor="@color/gray" />
 
@@ -19,7 +19,7 @@
         android:id="@+id/gamePlayerScore"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Score"
+        android:text="@string/photos_found"
         android:textAppearance="?android:attr/textAppearanceLarge"
         android:textColor="@color/gray" />
 

@@ -15,5 +15,10 @@
     <string name="join_game_title">Join Game</string>
     <string name="joinGameLabel">Join Game</string>
     <string name="loading">loading...</string>
+    <string name="player">player</string>
+    <string name="photos_found">photos found</string>
+    <string name="latutude">latitude</string>
+    <string name="longitude">longitude</string>
+    <string name="found_it">Found it!</string>
 
 </resources>

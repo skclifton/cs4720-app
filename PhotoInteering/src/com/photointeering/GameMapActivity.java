@@ -76,10 +76,10 @@ public class GameMapActivity extends Activity implements OnMarkerClickListener {
 	String joinGameURL = "http://plato.cs.virginia.edu/~cs4720s14asparagus/join_game/";
 	String getScoresURL = "http://plato.cs.virginia.edu/~cs4720s14asparagus/get_scores/";
 	String getNewGameURL = "http://plato.cs.virginia.edu/~cs4720s14asparagus/get_recent_game/";
-	
+
 	private TableLayout gamePlayersScrollView;
 
-	//private TableLayout photoScrollView;
+	// private TableLayout photoScrollView;
 
 	GoogleMap map;
 	private View infoWindow;
@@ -90,7 +90,8 @@ public class GameMapActivity extends Activity implements OnMarkerClickListener {
 		setContentView(R.layout.activity_game);
 		// setContentView(R.layout.activity_game_map);
 
-		//photoScrollView = (TableLayout) findViewById(R.id.photoScrollViewTable);
+		// photoScrollView = (TableLayout)
+		// findViewById(R.id.photoScrollViewTable);
 		gamePlayersScrollView = (TableLayout) findViewById(R.id.gamePlayersTableLayout);
 
 		Intent intent = getIntent();
@@ -105,11 +106,12 @@ public class GameMapActivity extends Activity implements OnMarkerClickListener {
 		String currentLon = Double.toString(currentLonDouble);
 		String gpsCoords = intent.getStringExtra(MainActivity.GPS_COORDS);
 		boolean newGame = intent.getBooleanExtra("newGame", true);
-		int  gameID = intent.getIntExtra("gameID", 0);
+		int gameID = intent.getIntExtra("gameID", 0);
 		String sendURL = "";
 
 		if (newGame) {
-			sendURL = newGameURL + currentLat + "/" + currentLon + "/" + getAccountName();
+			sendURL = newGameURL + currentLat + "/" + currentLon + "/"
+					+ getAccountName();
 		} else {
 			sendURL = joinGameURL + gameID + "/" + "test";
 		}
@@ -119,15 +121,15 @@ public class GameMapActivity extends Activity implements OnMarkerClickListener {
 
 		map = ((MapFragment) getFragmentManager().findFragmentById(R.id.map))
 				.getMap();
-		map.setInfoWindowAdapter(new CustomInfoAdapter());
 		map.setOnMarkerClickListener(this);
 
 		LatLng current = new LatLng(currentLatDouble, currentLonDouble);
 		Marker currentMark = map.addMarker(new MarkerOptions()
 				.position(current)
-				.title("Start")
 				.icon(BitmapDescriptorFactory
 						.defaultMarker(BitmapDescriptorFactory.HUE_GREEN)));
+
+		map.setInfoWindowAdapter(new CustomInfoAdapter());
 
 		map.moveCamera(CameraUpdateFactory.newLatLngZoom(current, 0));
 
@@ -139,21 +141,20 @@ public class GameMapActivity extends Activity implements OnMarkerClickListener {
 
 		TextView photosFound = (TextView) findViewById(R.id.photosFoundTextView);
 		photosFound.setText("0");
-		
-		
+
 		updatePlayers(gameID, newGame);
 
 		new MyAsyncTask().execute(sendURL);
 	}
 
 	public void updatePlayers(int gameID, boolean isNew) {
-		
+
 		String sendURL = "";
 		String newGameURL = "";
-		if (isNew) {						
-			newGameURL =  getNewGameURL + "test";			
-		} else {		
-			sendURL =  getScoresURL + gameID;			
+		if (isNew) {
+			newGameURL = getNewGameURL + "test";
+		} else {
+			sendURL = getScoresURL + gameID;
 		}
 		new MyUpdatePlayersTask().execute(newGameURL, sendURL);
 	}
@@ -207,16 +208,15 @@ public class GameMapActivity extends Activity implements OnMarkerClickListener {
 			return null;
 	}
 
-	
 	private class MyUpdatePlayersTask extends AsyncTask<String, String, String> {
 
 		@Override
 		protected String doInBackground(String... args) {
-			
-			String SendURL1 = args[0];			
+
+			String SendURL1 = args[0];
 			int id = -1;
 			if (!SendURL1.equals("")) {
-				
+
 				DefaultHttpClient httpclient = new DefaultHttpClient(
 						new BasicHttpParams());
 
@@ -249,42 +249,39 @@ public class GameMapActivity extends Activity implements OnMarkerClickListener {
 					} catch (Exception squish) {
 					}
 				}
-//
-//				JSONArray jArray = null;
-//				try {
-//					Log.d("jArray", result.toString());
-//
-//					jArray = new JSONArray(result);
-//				} catch (JSONException e1) {
-//					// TODO Auto-generated catch block
-//					e1.printStackTrace();
-//				}		
-				
-				
+				//
+				// JSONArray jArray = null;
+				// try {
+				// Log.d("jArray", result.toString());
+				//
+				// jArray = new JSONArray(result);
+				// } catch (JSONException e1) {
+				// // TODO Auto-generated catch block
+				// e1.printStackTrace();
+				// }
+
 				JSONObject jObject;
 				try {
 					jObject = new JSONObject(result.toString());
-					id = jObject.getInt("gameID");							
+					id = jObject.getInt("gameID");
 					Log.d("id", id + "");
 				} catch (JSONException e1) {
 					// TODO Auto-generated catch block
 					e1.printStackTrace();
-				}										
-					
+				}
+
 				// Add the new components for the row to the TableLayout
 
-												
-				
 			}
-			
+
 			String sendURL = null;
 			if (id >= 0) {
 				sendURL = getScoresURL + id;
 			} else {
 				sendURL = args[1];
-			}			
-			
-			Log.d("url",sendURL);
+			}
+
+			Log.d("url", sendURL);
 			DefaultHttpClient httpclient = new DefaultHttpClient(
 					new BasicHttpParams());
 
@@ -327,7 +324,7 @@ public class GameMapActivity extends Activity implements OnMarkerClickListener {
 				// TODO Auto-generated catch block
 				e1.printStackTrace();
 			}
-			
+
 			playersAndScores.clear();
 
 			if (jArray != null) {
@@ -339,48 +336,44 @@ public class GameMapActivity extends Activity implements OnMarkerClickListener {
 						jObject = jArray.getJSONObject(i);
 						user = jObject.getString("username");
 						score = jObject.getInt("score");
-						
+
 						playersAndScores.add(user);
-						playersAndScores.add(Integer.toString(score));					
+						playersAndScores.add(Integer.toString(score));
 					} catch (JSONException e) {
 						e.printStackTrace();
 					}
 				}
-				
-			// Add the new components for the row to the TableLayout
+
+				// Add the new components for the row to the TableLayout
 
 			}
 			return null;
 		}
-		
+
 		protected void onPostExecute(String result) {
 
-			
 			for (int i = 0; i < playersAndScores.size() - 1; i += 2) {
 				// Get the LayoutInflator service
 				LayoutInflater inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-	
+
 				// Use the inflater to inflate a join row from
-				View newGamePlayerRow = inflater.inflate(R.layout.game_player_row, null);
-	
+				View newGamePlayerRow = inflater.inflate(
+						R.layout.game_player_row, null);
+
 				TextView playerName = (TextView) newGamePlayerRow
 						.findViewById(R.id.gamePlayerName);
-	
+
 				TextView playerScore = (TextView) newGamePlayerRow
 						.findViewById(R.id.gamePlayerScore);
 				playerName.setText(playersAndScores.get(i));
-				playerScore.setText(playersAndScores.get(i+1));
+				playerScore.setText(playersAndScores.get(i + 1));
 				Log.d("newGamePlayerRow", newGamePlayerRow.toString());
 				gamePlayersScrollView.addView(newGamePlayerRow);
 			}
 
-			
-
 		}
-		
+
 	}
-	
-	
 
 	private class MyAsyncTask extends AsyncTask<String, String, String> {
 
@@ -494,39 +487,7 @@ public class GameMapActivity extends Activity implements OnMarkerClickListener {
 
 			}
 
-			// // Get the LayoutInflator service
-			// LayoutInflater inflater = (LayoutInflater)
-			// getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-			//
-			// // Use the inflater to inflate a join row from
-			// // game_map_row.xml
-			// View newPhotoRow = inflater
-			// .inflate(R.layout.game_map_row, null);
-			//
-			// ImageView newImageView = (ImageView) newPhotoRow
-			// .findViewById(R.id.image);
-			//
-			// newImageView.setImageDrawable(photo);
-			//
-			//
-			// TextView newImageLat = (TextView) newPhotoRow
-			// .findViewById(R.id.latitudeTextView);
-			// String string_lat = Double.toString(lat);
-			// newImageLat.setText(string_lat);
-			//
-			// TextView newImageLon = (TextView) newPhotoRow
-			// .findViewById(R.id.longitudeTextView);
-			// String string_long = Double.toString(lon);
-			// newImageLon.setText(string_long);
-			//
-			// // Add the new components for the stock to the TableLayout
-			// Log.d("newPhotoRow", newPhotoRow.toString());
-			// photoScrollView.addView(newPhotoRow);
-
-			// }
-
 		}
-		
 
 	}
 

@@ -28,7 +28,7 @@
                 android:id="@+id/playerTextView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Large Text"
+                android:text="@string/player"
                 android:textAppearance="?android:attr/textAppearanceLarge"
                 android:textColor="@color/gray" />
         </TableRow>
@@ -52,7 +52,7 @@
                 android:id="@+id/photosFoundTextView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Large Text"
+                android:text="@string/photos_found"
                 android:textAppearance="?android:attr/textAppearanceLarge"
                 android:textColor="@color/gray" />
         </TableRow>
@@ -61,7 +61,9 @@
             android:layout_width="wrap_content"
             android:layout_height="1dp"
             android:background="@color/dark_cream"
-            android:minHeight="2dp" />
+            android:minHeight="2dp" >
+
+        </TableRow>
 
         <ScrollView
             android:id="@+id/gamePlayersScrollView"
@@ -72,9 +74,29 @@
             <TableLayout
                 android:id="@+id/gamePlayersTableLayout"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent" >
+                android:layout_height="wrap_content"
+                android:paddingBottom="@dimen/pad10dp" >
+
             </TableLayout>
         </ScrollView>
+
+        <TableRow
+            android:layout_width="wrap_content"
+            android:layout_height="1dp"
+            android:background="@color/dark_cream"
+            android:minHeight="2dp" >
+
+        </TableRow>
+
+        <Button
+            android:id="@+id/button1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/pad10dp"
+            android:padding="@dimen/pad10dp"
+            android:text="@string/found_it"
+            android:textColor="@color/gray" />
+
     </TableLayout>
 
     <fragment

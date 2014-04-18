@@ -13,7 +13,7 @@
         android:layout_span="1"
         android:layout_weight="1"
         android:paddingRight="@dimen/pad20dp"
-        android:text="Latitude"
+        android:text="@string/latutude"
         android:textColor="@color/gray" />
 
     <TextView
@@ -25,7 +25,7 @@
         android:paddingLeft="@dimen/pad20dp"
         android:paddingRight="@dimen/pad20dp"
         android:paddingTop="@dimen/pad20dp"
-        android:text="Longitude"
+        android:text="@string/longitude"
         android:textColor="@color/gray" />
     
     <Button
