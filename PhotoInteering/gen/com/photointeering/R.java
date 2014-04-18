@@ -241,7 +241,7 @@ containing a value of this type.
         public static final int RelativeLayout1=0x7f050018;
         public static final int TableRow=0x7f05001a;
         public static final int action_settings=0x7f050025;
-        public static final int button1=0x7f05000d;
+        public static final int foundItButton=0x7f05000d;
         public static final int gameIDTitleTextView=0x7f050010;
         public static final int gamePlayerName=0x7f05001e;
         public static final int gamePlayerScore=0x7f05001f;

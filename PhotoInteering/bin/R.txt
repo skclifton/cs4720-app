@@ -78,7 +78,7 @@ int id GameIDTextView 0x7f050020
 int id RelativeLayout1 0x7f050018
 int id TableRow 0x7f05001a
 int id action_settings 0x7f050025
-int id button1 0x7f05000d
+int id foundItButton 0x7f05000d
 int id gameIDTitleTextView 0x7f050010
 int id gamePlayerName 0x7f05001e
 int id gamePlayerScore 0x7f05001f

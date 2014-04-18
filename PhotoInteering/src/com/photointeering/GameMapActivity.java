@@ -20,6 +20,10 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.GooglePlayServicesClient;
+import com.google.android.gms.common.GooglePlayServicesUtil;
+import com.google.android.gms.location.LocationClient;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.GoogleMap.InfoWindowAdapter;
@@ -30,39 +34,54 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.photointeering.JoinGameActivity.JoinClickListener;
+import com.photointeering.MainActivity.ErrorDialogFragment;
 
 import android.accounts.Account;
 import android.accounts.AccountManager;
 import android.app.Activity;
+import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentSender;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
+import android.location.Location;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.v4.app.DialogFragment;
+import android.support.v4.app.FragmentActivity;
 import android.util.Log;
 
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TableLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
-public class GameMapActivity extends Activity implements OnMarkerClickListener {
+public class GameMapActivity extends FragmentActivity implements
+		OnMarkerClickListener, GooglePlayServicesClient.ConnectionCallbacks,
+		GooglePlayServicesClient.OnConnectionFailedListener {
 
 	int IMAGE_WIDTH = 256;
 	int IMAGE_HEIGHT = 180;
+
+	double PHOTO_FOUND_DISTANCE = 0.05;
 
 	private static final String TAG = "PHOTO";
 
 	ImageView image;
 	TextView latitudeTextView;
 	TextView longitudeTextView;
+	Button foundItButton;
 	ArrayList<Double> ret = new ArrayList<Double>();
 	ArrayList<Drawable> drawRet = new ArrayList<Drawable>();
 	ArrayList<String> playersAndScores = new ArrayList<String>();
+	ArrayList<Marker> mapMarkers = new ArrayList<Marker>();
+	private static final String DIALOG_ERROR = "dialog_error";
 
 	static final String KEY_PHOTO_URL = "url";
 	static final String KEY_PHOTO_LAT = "lat";
@@ -75,7 +94,8 @@ public class GameMapActivity extends Activity implements OnMarkerClickListener {
 	String newGameURL = "http://plato.cs.virginia.edu/~cs4720s14asparagus/new_game/";
 	String joinGameURL = "http://plato.cs.virginia.edu/~cs4720s14asparagus/join_game/";
 	String getScoresURL = "http://plato.cs.virginia.edu/~cs4720s14asparagus/get_scores/";
-	String getNewGameURL = "http://plato.cs.virginia.edu/~cs4720s14asparagus/get_recent_game/";
+	String recentGameURL = "http://plato.cs.virginia.edu/~cs4720s14asparagus/get_recent_game/";
+	String updateScoreURL = "http://plato.cs.virginia.edu/~cs4720s14asparagus/update_score/";
 
 	private TableLayout gamePlayersScrollView;
 
@@ -84,20 +104,24 @@ public class GameMapActivity extends Activity implements OnMarkerClickListener {
 	GoogleMap map;
 	private View infoWindow;
 	public HashMap images = new HashMap<Marker, Bitmap>();
+	LocationClient mLocationClient;
+	Location mCurrentLocation;
+	int gameID;
 
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_game);
-		// setContentView(R.layout.activity_game_map);
 
-		// photoScrollView = (TableLayout)
-		// findViewById(R.id.photoScrollViewTable);
+		// Initialize UI elements
 		gamePlayersScrollView = (TableLayout) findViewById(R.id.gamePlayersTableLayout);
-
 		Intent intent = getIntent();
 		image = (ImageView) findViewById(R.id.image);
 		latitudeTextView = (TextView) findViewById(R.id.latitudeTextView);
 		longitudeTextView = (TextView) findViewById(R.id.longitudeTextView);
+		foundItButton = (Button) findViewById(R.id.foundItButton);
+		foundItButton.setOnClickListener(foundItButtonListener);
+
+		mLocationClient = new LocationClient(this, this, this);
 
 		Double currentLatDouble = intent.getDoubleExtra("lat", 0.0);
 		Double currentLonDouble = intent.getDoubleExtra("lon", 0.0);
@@ -106,14 +130,18 @@ public class GameMapActivity extends Activity implements OnMarkerClickListener {
 		String currentLon = Double.toString(currentLonDouble);
 		String gpsCoords = intent.getStringExtra(MainActivity.GPS_COORDS);
 		boolean newGame = intent.getBooleanExtra("newGame", true);
-		int gameID = intent.getIntExtra("gameID", 0);
+
+		getGameIDTask getGameID = new getGameIDTask();
+		getGameID.execute();
+		gameID = 0;
+		Log.d("gameID after getting from intent", String.valueOf(gameID));
 		String sendURL = "";
 
 		if (newGame) {
 			sendURL = newGameURL + currentLat + "/" + currentLon + "/"
 					+ getAccountName();
 		} else {
-			sendURL = joinGameURL + gameID + "/" + "test";
+			sendURL = joinGameURL + gameID + "/" + getAccountName();
 		}
 
 		infoWindow = getLayoutInflater().inflate(R.layout.custom_info_window,
@@ -142,17 +170,104 @@ public class GameMapActivity extends Activity implements OnMarkerClickListener {
 		TextView photosFound = (TextView) findViewById(R.id.photosFoundTextView);
 		photosFound.setText("0");
 
-		updatePlayers(gameID, newGame);
+		Log.d("gameIDasdfasdfasdf", String.valueOf(gameID));
+		getPlayers(gameID, newGame);
 
 		new MyAsyncTask().execute(sendURL);
 	}
 
-	public void updatePlayers(int gameID, boolean isNew) {
+	public OnClickListener foundItButtonListener = new OnClickListener() {
+		public void onClick(View v) {
+
+			mCurrentLocation = mLocationClient.getLastLocation();
+
+			double lat = 0.0;
+			double lon = 0.0;
+
+			if (mCurrentLocation != null) {
+				Log.d("location", mCurrentLocation.toString());
+				lat = mCurrentLocation.getLatitude();
+				lon = mCurrentLocation.getLongitude();
+			}
+
+			for (Marker m : mapMarkers) {
+				double photoLat = m.getPosition().latitude;
+				double photoLon = m.getPosition().longitude;
+				boolean found = Math.abs(photoLat - lat) < PHOTO_FOUND_DISTANCE
+						&& Math.abs(photoLon - lon) < PHOTO_FOUND_DISTANCE;
+				if (found) {
+					TextView photosFound = (TextView) findViewById(R.id.photosFoundTextView);
+					int score = Integer.parseInt(photosFound.getText()
+							.toString());
+					score += 1;
+					photosFound.setText(String.valueOf(score));
+					String sendURL = updateScoreURL + gameID + "/"
+							+ getAccountName() + "/" + score;
+					Log.d("gameID when updating score", String.valueOf(gameID));
+
+					m.setIcon(BitmapDescriptorFactory
+							.defaultMarker(BitmapDescriptorFactory.HUE_GREEN));
+
+					new UpdateScoreTask().execute(sendURL);
+				} else {
+
+				}
+			}
+
+		}
+	};
+
+	private class UpdateScoreTask extends AsyncTask<String, String, String> {
+
+		@Override
+		protected String doInBackground(String... args) {
+
+			String sendURL = args[0];
+
+			DefaultHttpClient httpclient = new DefaultHttpClient(
+					new BasicHttpParams());
+
+			HttpPost httppost = new HttpPost(sendURL);
+			httppost.setHeader("Content-type", "application/json");
+
+			InputStream inputStream = null;
+
+			String result = null;
+
+			try {
+				HttpResponse response = httpclient.execute(httppost);
+				HttpEntity entity = response.getEntity();
+				inputStream = entity.getContent();
+				BufferedReader reader = new BufferedReader(
+						new InputStreamReader(inputStream, "UTF-8"), 8);
+				StringBuilder sb = new StringBuilder();
+
+				String line = null;
+				while ((line = reader.readLine()) != null) {
+					sb.append(line + "\n");
+				}
+				result = sb.toString();
+				Log.d("result", result);
+			} catch (Exception e) {
+
+			} finally {
+				try {
+					if (inputStream != null)
+						inputStream.close();
+				} catch (Exception squish) {
+				}
+			}
+			return null;
+		}
+
+	}
+
+	public void getPlayers(int gameID, boolean isNew) {
 
 		String sendURL = "";
 		String newGameURL = "";
 		if (isNew) {
-			newGameURL = getNewGameURL + "test";
+			newGameURL = recentGameURL + getAccountName();
 		} else {
 			sendURL = getScoresURL + gameID;
 		}
@@ -208,23 +323,18 @@ public class GameMapActivity extends Activity implements OnMarkerClickListener {
 			return null;
 	}
 
-	private class MyUpdatePlayersTask extends AsyncTask<String, String, String> {
+	private class getGameIDTask extends AsyncTask<String, String, String> {
 
 		@Override
 		protected String doInBackground(String... args) {
 
-			String SendURL1 = args[0];
-			int id = -1;
+			String SendURL1 = recentGameURL + getAccountName();
 			if (!SendURL1.equals("")) {
-
 				DefaultHttpClient httpclient = new DefaultHttpClient(
 						new BasicHttpParams());
-
 				HttpPost httppost = new HttpPost(SendURL1);
 				httppost.setHeader("Content-type", "application/json");
-
 				InputStream inputStream = null;
-
 				String result = null;
 
 				try {
@@ -249,34 +359,33 @@ public class GameMapActivity extends Activity implements OnMarkerClickListener {
 					} catch (Exception squish) {
 					}
 				}
-				//
-				// JSONArray jArray = null;
-				// try {
-				// Log.d("jArray", result.toString());
-				//
-				// jArray = new JSONArray(result);
-				// } catch (JSONException e1) {
-				// // TODO Auto-generated catch block
-				// e1.printStackTrace();
-				// }
 
 				JSONObject jObject;
 				try {
 					jObject = new JSONObject(result.toString());
-					id = jObject.getInt("gameID");
-					Log.d("id", id + "");
+					gameID = jObject.getInt("gameID");
+
+					Log.d("id", gameID + "");
 				} catch (JSONException e1) {
-					// TODO Auto-generated catch block
 					e1.printStackTrace();
 				}
 
-				// Add the new components for the row to the TableLayout
-
 			}
+			return null;
+		}
+
+	}
+
+	private class MyUpdatePlayersTask extends AsyncTask<String, String, String> {
+
+		@Override
+		protected String doInBackground(String... args) {
+
+			// Add the new components for the row to the TableLayout
 
 			String sendURL = null;
-			if (id >= 0) {
-				sendURL = getScoresURL + id;
+			if (gameID >= 0) {
+				sendURL = getScoresURL + gameID;
 			} else {
 				sendURL = args[1];
 			}
@@ -321,7 +430,6 @@ public class GameMapActivity extends Activity implements OnMarkerClickListener {
 
 				jArray = new JSONArray(result);
 			} catch (JSONException e1) {
-				// TODO Auto-generated catch block
 				e1.printStackTrace();
 			}
 
@@ -353,7 +461,7 @@ public class GameMapActivity extends Activity implements OnMarkerClickListener {
 		protected void onPostExecute(String result) {
 
 			for (int i = 0; i < playersAndScores.size() - 1; i += 2) {
-				// Get the LayoutInflator service
+				// Get the LayoutInflater service
 				LayoutInflater inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
 				// Use the inflater to inflate a join row from
@@ -421,7 +529,6 @@ public class GameMapActivity extends Activity implements OnMarkerClickListener {
 
 				jArray = new JSONArray(result);
 			} catch (JSONException e1) {
-				// TODO Auto-generated catch block
 				e1.printStackTrace();
 			}
 
@@ -481,7 +588,7 @@ public class GameMapActivity extends Activity implements OnMarkerClickListener {
 								.position(photoPosition)
 								.icon(BitmapDescriptorFactory
 										.defaultMarker(BitmapDescriptorFactory.HUE_AZURE)));
-
+				mapMarkers.add(currentMark);
 				images.put(currentMark, b);
 				// .icon(BitmapDescriptorFactory.fromBitmap(cS)));
 
@@ -489,6 +596,142 @@ public class GameMapActivity extends Activity implements OnMarkerClickListener {
 
 		}
 
+	}
+
+	// Everything involved with getting the current location
+	private final static int CONNECTION_FAILURE_RESOLUTION_REQUEST = 9000;
+
+	public static class ErrorDialogFragment extends DialogFragment {
+		// Global field to contain the error dialog
+		private Dialog mDialog;
+
+		// Default constructor. Sets the dialog field to null
+		public ErrorDialogFragment() {
+			super();
+			mDialog = null;
+		}
+
+		// Set the dialog to display
+		public void setDialog(Dialog dialog) {
+			mDialog = dialog;
+		}
+
+		// Return a Dialog to the DialogFragment.
+		@Override
+		public Dialog onCreateDialog(Bundle savedInstanceState) {
+			return mDialog;
+		}
+	}
+
+	/*
+	 * Handle results returned to the FragmentActivity by Google Play services
+	 */
+	@Override
+	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+		// Decide what to do based on the original request code
+		switch (requestCode) {
+		case CONNECTION_FAILURE_RESOLUTION_REQUEST:
+			/*
+			 * If the result code is Activity.RESULT_OK, try to connect again
+			 */
+			switch (resultCode) {
+			case Activity.RESULT_OK:
+				/*
+				 * Try the request again
+				 */
+				break;
+			}
+		}
+	}
+
+	protected void onStart() {
+		super.onStart();
+		if (this.servicesConnected()) {
+			mLocationClient.connect();
+		}
+	}
+
+	private boolean servicesConnected() {
+		// Check that Google Play services is available
+		int resultCode = GooglePlayServicesUtil
+				.isGooglePlayServicesAvailable(this);
+		// If Google Play services is available
+		if (ConnectionResult.SUCCESS == resultCode) {
+			// In debug mode, log the status
+			Log.d("Location Updates", "Google Play services is available.");
+			// Continue
+			return true;
+			// Google Play services was not available for some reason
+		} else {
+			// Get the error code
+			int errorCode = resultCode; // connectionResult.getErrorCode();
+			// Get the error dialog from Google Play services
+			Dialog errorDialog = GooglePlayServicesUtil.getErrorDialog(
+					errorCode, this, CONNECTION_FAILURE_RESOLUTION_REQUEST);
+
+			// If Google Play services can provide an error dialog
+			if (errorDialog != null) {
+				// Create a new DialogFragment for the error dialog
+				ErrorDialogFragment errorFragment = new ErrorDialogFragment();
+				// Set the dialog in the DialogFragment
+				errorFragment.setDialog(errorDialog);
+				// Show the error dialog in the DialogFragment
+				errorFragment.show(getSupportFragmentManager(),
+						"Location Updates");
+			}
+			return false;
+		}
+	}
+
+	//
+	public void onConnectionFailed(ConnectionResult connectionResult) {
+		if (connectionResult.hasResolution()) {
+			try {
+				// Start an Activity that tries to resolve the error
+				connectionResult.startResolutionForResult(this,
+						CONNECTION_FAILURE_RESOLUTION_REQUEST);
+				/*
+				 * Thrown if Google Play services canceled the original
+				 * PendingIntent
+				 */
+			} catch (IntentSender.SendIntentException e) {
+				// Log the error
+				e.printStackTrace();
+			}
+		} else {
+			/*
+			 * If no resolution is available, display a dialog to the user with
+			 * the error.
+			 */
+			showErrorDialog(connectionResult.getErrorCode());
+		}
+	}
+
+	private void showErrorDialog(int errorCode) {
+		// Create a fragment for the error dialog
+		ErrorDialogFragment dialogFragment = new ErrorDialogFragment();
+		// Pass the error that should be displayed
+		Bundle args = new Bundle();
+		args.putInt(DIALOG_ERROR, errorCode);
+		dialogFragment.setArguments(args);
+		dialogFragment.show(getSupportFragmentManager(), "errordialog");
+	}
+
+	//
+	public void onConnected(Bundle dataBundle) {
+		Toast.makeText(this, "Connected", Toast.LENGTH_SHORT).show();
+
+	}
+
+	//
+	public void onDisconnected() {
+		Toast.makeText(this, "Disconnected. Please re-connect.",
+				Toast.LENGTH_SHORT).show();
+	}
+
+	protected void onStop() {
+		mLocationClient.disconnect();
+		super.onStop();
 	}
 
 }
