@@ -25,4 +25,7 @@
     <string name="keep_on_seeking">Keep on seeking!</string>
     <string name="cancel">Cancel</string>
     <string name="game_starter">Started By</string>
+    <string name="continue_button">Continue</string>
+    <string name="you_won">You Won!</string>
+    
 </resources>
