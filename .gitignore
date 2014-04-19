@@ -11,7 +11,7 @@
 
 # generated files
 PhotoInteering/bin/
-gen/
+PhotoInteering/gen/
 
 # Local configuration file (sdk path, etc)
 local.properties
