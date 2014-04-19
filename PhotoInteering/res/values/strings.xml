@@ -24,4 +24,5 @@
     <string name="point_not_found">Not quite there yet!</string>
     <string name="keep_on_seeking">Keep on seeking!</string>
     <string name="cancel">Cancel</string>
+    <string name="game_starter">Started By</string>
 </resources>

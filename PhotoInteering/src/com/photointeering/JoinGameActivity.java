@@ -50,7 +50,7 @@ public class JoinGameActivity extends Activity {
 	ArrayList<Drawable> drawRet = new ArrayList<Drawable>();
 
 	// map to keep count of each gameID, as well as to which game players belong
-	HashMap<Integer, Tuple> IDMap;	
+	HashMap<Integer, Tuple> IDMap;
 
 	static final String KEY_PHOTO_URL = "url";
 	static final String KEY_PHOTO_LAT = "lat";
@@ -141,7 +141,7 @@ public class JoinGameActivity extends Activity {
 				e1.printStackTrace();
 			}
 
-			IDMap = new HashMap<Integer, Tuple>();			
+			IDMap = new HashMap<Integer, Tuple>();
 
 			if (jArray != null) {
 				for (int i = 0; i < jArray.length(); i++) {
@@ -152,24 +152,24 @@ public class JoinGameActivity extends Activity {
 
 					try {
 						jObject = jArray.getJSONObject(i);
-						gameCreator = jObject.getString("username");						
+						gameCreator = jObject.getString("starter");
 						gameID = jObject.getInt("gameID");
 
 					} catch (JSONException e) {
 						Log.e("error", e.getMessage());
-					}					
+					}
 
 					if (!IDMap.containsKey(gameID)) {
-						Tuple t = new Tuple(gameCreator, 1);						
+						Tuple t = new Tuple(gameCreator, 1);
 						IDMap.put(gameID, t);
 					} else {
 						Tuple t = IDMap.get(gameID);
 						t.increment_players();
 						IDMap.put(gameID, t);
-					}					
-					
+					}
+
 				}
-							
+
 			}
 
 			return null;
@@ -181,12 +181,13 @@ public class JoinGameActivity extends Activity {
 
 			// create map from IDs to players, this is the player that will show
 			// up in full in the menu
-			HashMap<Integer, String> mainPlayers = new HashMap<Integer, String>();
-			
-			for (Map.Entry<Integer,Tuple> entry : IDMap.entrySet()) {
-			    System.out.println(entry.getKey() + " " + entry.getValue());
-			    
-			 // Get the LayoutInflator service
+			// HashMap<Integer, String> mainPlayers = new HashMap<Integer,
+			// String>();
+
+			for (Map.Entry<Integer, Tuple> entry : IDMap.entrySet()) {
+				System.out.println(entry.getKey() + " " + entry.getValue());
+
+				// Get the LayoutInflator service
 				LayoutInflater inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
 				// Use the inflater to inflate a join row from
@@ -198,19 +199,19 @@ public class JoinGameActivity extends Activity {
 						.findViewById(R.id.GameIDTextView);
 
 				String id_str = entry.getKey().toString();
-				
+
 				GameID.setText(id_str);
-				
+
 				TextView gameCreator = (TextView) newJoinRow
 						.findViewById(R.id.GameCreatorTextView);
 
-				String displayedPlayer = entry.getValue().getGameOwner();
-				int num_in_game = entry.getValue().getNumPlayers();
-				
-				String player_string = displayedPlayer + " + "
-						+ (num_in_game - 1) + " others playing";
-				
-				gameCreator.setText(player_string);
+				String gameCreatorUsername = entry.getValue().getGameOwner();
+				// int num_in_game = entry.getValue().getNumPlayers();
+				//
+				// String player_string = displayedPlayer + " + "
+				// + (num_in_game - 1) + " others playing";
+				//
+				gameCreator.setText(gameCreatorUsername);
 
 				Button joinRowButton = (Button) newJoinRow
 						.findViewById(R.id.joinGameRowButton);
@@ -219,19 +220,18 @@ public class JoinGameActivity extends Activity {
 
 				// Add the new components for the row to the TableLayout
 				Log.d("newJoinRow", newJoinRow.toString());
-				
-//				Can be used to add different colored lines later
-//				if (i%2 == 1) {
-//					newJoinRow.setBackgroundColor(color.dark_cream);
-//				}
-//				else {
-//					newJoinRow.setBackgroundColor(color.cream);
-//				}
-				
+
+				// Can be used to add different colored lines later
+				// if (i%2 == 1) {
+				// newJoinRow.setBackgroundColor(color.dark_cream);
+				// }
+				// else {
+				// newJoinRow.setBackgroundColor(color.cream);
+				// }
+
 				joinScrollView.addView(newJoinRow);
 
 			}
-			
 
 		}
 
@@ -254,15 +254,15 @@ public class JoinGameActivity extends Activity {
 
 			int gameID = this.id;
 
-			Intent mapGame = new Intent(JoinGameActivity.this, GameMapActivity.class);
+			Intent mapGame = new Intent(JoinGameActivity.this,
+					GameMapActivity.class);
 			mapGame.putExtra("lat", currentLatDouble);
 			mapGame.putExtra("lon", currentLonDouble);
 			mapGame.putExtra("newGame", newGame);
 			mapGame.putExtra("gameID", gameID);
-			
+
 			startActivity(mapGame);
 		}
 	}
-
 
 }

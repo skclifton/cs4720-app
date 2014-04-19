@@ -7,8 +7,7 @@
     android:paddingRight="@dimen/pad300dp"
     android:paddingTop="@dimen/pad20dp"
     android:showDividers="beginning"
-    android:shrinkColumns="0"
-    android:stretchColumns="1,2" >
+ >
 
     <TableRow
         android:id="@+id/joinTableRowTitles"
@@ -25,16 +24,18 @@
             android:gravity="center"
             android:text="@string/game_ID"
             android:textAppearance="?android:attr/textAppearanceLarge"
-            android:textColor="@color/gray" />
+            android:textColor="@color/gray" 
+            android:layout_weight="1"/>
 
         <TextView
-            android:id="@+id/playersTitleTextView"
+            android:id="@+id/gameStarterTitleTextView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:gravity="center"
-            android:text="@string/players_title"
+            android:text="@string/game_starter"
             android:textAppearance="?android:attr/textAppearanceLarge"
-            android:textColor="@color/gray" />
+            android:textColor="@color/gray"
+            android:layout_weight="1" />
 
         <TextView
             android:id="@+id/textView1"
@@ -43,7 +44,8 @@
             android:gravity="center"
             android:text="@string/joinGameLabel"
             android:textAppearance="?android:attr/textAppearanceLarge"
-            android:textColor="@color/gray" />
+            android:textColor="@color/gray" 
+            android:layout_weight="1"/>
 
     </TableRow>
 

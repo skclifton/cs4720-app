@@ -250,6 +250,7 @@ containing a value of this type.
         public static final int gamePlayerScore=0x7f050022;
         public static final int gamePlayersScrollView=0x7f05000e;
         public static final int gamePlayersTableLayout=0x7f05000f;
+        public static final int gameStarterTitleTextView=0x7f050014;
         public static final int gameTitleTextView=0x7f05001a;
         public static final int hsvBackgroundContainer=0x7f050026;
         public static final int hybrid=0x7f050004;
@@ -273,7 +274,6 @@ containing a value of this type.
         public static final int player=0x7f050008;
         public static final int playerLabelTextView=0x7f050009;
         public static final int playerTextView=0x7f05000a;
-        public static final int playersTitleTextView=0x7f050014;
         public static final int satellite=0x7f050002;
         public static final int terrain=0x7f050003;
         public static final int textView1=0x7f050015;
@@ -396,6 +396,7 @@ containing a value of this type.
         public static final int found_it=0x7f06002c;
         public static final int game_ID=0x7f060023;
         public static final int game_id_label=0x7f06002d;
+        public static final int game_starter=0x7f060031;
         public static final int game_title=0x7f060022;
         public static final int hello_world=0x7f06001c;
         public static final int joinGameLabel=0x7f060026;

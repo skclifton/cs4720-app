@@ -12,8 +12,9 @@
         android:layout_height="wrap_content"
         android:layout_span="1"
         android:layout_weight="1"
+        android:gravity="center"
         android:paddingRight="@dimen/pad20dp"
-        android:text="@string/latutude"
+        android:text="@string/game_ID"
         android:textColor="@color/gray" />
 
     <TextView
@@ -22,10 +23,11 @@
         android:layout_height="wrap_content"
         android:layout_span="1"
         android:layout_weight="1"
+        android:gravity="center"
         android:paddingLeft="@dimen/pad20dp"
         android:paddingRight="@dimen/pad20dp"
         android:paddingTop="@dimen/pad20dp"
-        android:text="@string/longitude"
+        android:text="@string/game_starter"
         android:textColor="@color/gray" />
     
     <Button
@@ -34,6 +36,7 @@
         android:layout_height="wrap_content"
         android:gravity="center"
         android:text="@string/join_game_button"
-        android:textColor="@color/gray" />
+        android:textColor="@color/gray"
+        android:layout_weight="1" />
 
 </TableRow>
