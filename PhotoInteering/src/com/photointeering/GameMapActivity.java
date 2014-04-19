@@ -149,20 +149,6 @@ public class GameMapActivity extends FragmentActivity implements
 			sendURL = joinGameURL + gameID + "/" + getAccountName();
 		}
 
-		new MyAsyncTask().execute(sendURL);
-
-		// If a new game was started, we must wait to get the game ID so that it
-		// is the most recent
-		if (newGame) {
-			gameID = 0;
-			getGameIDTask getGameID = new getGameIDTask();
-			try {
-				gameID = Integer.parseInt(getGameID.execute().get());
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-		}
-
 		infoWindow = getLayoutInflater().inflate(R.layout.custom_info_window,
 				null);
 
@@ -182,15 +168,30 @@ public class GameMapActivity extends FragmentActivity implements
 
 		// Zoom in, animating the camera.
 		map.animateCamera(CameraUpdateFactory.zoomTo(15), 2000, null);
-
-		TextView gameIDTV = (TextView) findViewById(R.id.gameActivityGameIDTextView);
-		gameIDTV.setText(String.valueOf(gameID));
-
+		
 		TextView player = (TextView) findViewById(R.id.playerTextView);
 		player.setText(getAccountName());
 
 		TextView photosFound = (TextView) findViewById(R.id.photosFoundTextView);
 		photosFound.setText("0");
+		
+		new MyAsyncTask().execute(sendURL);
+
+		// If a new game was started, we must wait to get the game ID so that it
+		// is the most recent
+		if (newGame) {
+			gameID = 0;
+			getGameIDTask getGameID = new getGameIDTask();
+			try {
+				gameID = Integer.parseInt(getGameID.execute().get());
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+
+
+		TextView gameIDTV = (TextView) findViewById(R.id.gameActivityGameIDTextView);
+		gameIDTV.setText(String.valueOf(gameID));
 
 		getPlayers(gameID, newGame);
 
