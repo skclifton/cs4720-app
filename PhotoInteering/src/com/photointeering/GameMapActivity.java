@@ -246,6 +246,11 @@ public class GameMapActivity extends FragmentActivity implements
 				unfoundMapMarkers.remove(m);
 			}
 			
+			if (unfoundMapMarkers.isEmpty()) {
+				YouWonDialogFragment y = new YouWonDialogFragment();
+				y.show((GameMapActivity.this).getSupportFragmentManager(), "you won dialog window");
+			}
+			
 			if (displayWindow) {
 				PointNotFoundDialogFragment p = new PointNotFoundDialogFragment();
 				p.show((GameMapActivity.this).getSupportFragmentManager(),
