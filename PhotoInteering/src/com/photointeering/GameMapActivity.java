@@ -82,7 +82,7 @@ public class GameMapActivity extends FragmentActivity implements
 	Button foundItButton;
 	ArrayList<Double> ret = new ArrayList<Double>();
 	ArrayList<Drawable> drawRet = new ArrayList<Drawable>();
-	ArrayList<String> playersAndScores = new ArrayList<String>();
+	CopyOnWriteArrayList<String> playersAndScores = new CopyOnWriteArrayList<String>();
 	ArrayList<Marker> unfoundMapMarkers = new ArrayList<Marker>();
 	ArrayList<Marker> foundMapMarkers = new ArrayList<Marker>();
 	private static final String DIALOG_ERROR = "dialog_error";
@@ -412,7 +412,7 @@ public class GameMapActivity extends FragmentActivity implements
 
 	}
 
-	private class MyUpdatePlayersTask extends AsyncTask<String, String, String> {
+private class MyUpdatePlayersTask extends AsyncTask<String, String, String> {
 
 		@Override
 		protected String doInBackground(String... args) {
@@ -495,28 +495,59 @@ public class GameMapActivity extends FragmentActivity implements
 		}
 
 		protected void onPostExecute(String result) {
-
-			for (int i = 0; i < playersAndScores.size() - 1; i += 2) {
-				// Get the LayoutInflater service
-				LayoutInflater inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-
-				// Use the inflater to inflate a join row from
-				View newGamePlayerRow = inflater.inflate(
-						R.layout.game_player_row, null);
-
-				TextView playerName = (TextView) newGamePlayerRow
-						.findViewById(R.id.gamePlayerName);
-
-				TextView playerScore = (TextView) newGamePlayerRow
-						.findViewById(R.id.gamePlayerScore);
-				playerName.setText(playersAndScores.get(i));
-				playerScore.setText(playersAndScores.get(i + 1));
-				Log.d("newGamePlayerRow", newGamePlayerRow.toString());
-				gamePlayersScrollView.addView(newGamePlayerRow);
+			
+			
+			//reset the scroll view before population.
+			gamePlayersScrollView.removeAllViews();
+			
+			try {
+				for (int i = 0; i < playersAndScores.size() - 1; i += 2) {
+					// Get the LayoutInflater service
+					LayoutInflater inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+	
+					// Use the inflater to inflate a join row from
+					View newGamePlayerRow = inflater.inflate(
+							R.layout.game_player_row, null);
+	
+					TextView playerName = (TextView) newGamePlayerRow
+							.findViewById(R.id.gamePlayerName);
+	
+					TextView playerScore = (TextView) newGamePlayerRow
+							.findViewById(R.id.gamePlayerScore);
+					playerName.setText(playersAndScores.get(i));
+					playerScore.setText(playersAndScores.get(i + 1));
+					Log.d("newGamePlayerRow", newGamePlayerRow.toString());
+					gamePlayersScrollView.addView(newGamePlayerRow);
+					
+				}				
+			}
+			catch (Exception e){
+				
 			}
 
 		}
 
+	}
+	
+	public void callAsynchronousTask() {
+	    final Handler handler = new Handler();
+	    Timer timer = new Timer();
+	    TimerTask doAsynchronousTask = new TimerTask() {       
+	        @Override
+	        public void run() {
+	            handler.post(new Runnable() {
+	                public void run() {       
+	                    try {
+	                        MyUpdatePlayersTask updateAgain = new MyUpdatePlayersTask();
+	                        // PerformBackgroundTask this class is the class that extends AsynchTask 
+	                        updateAgain.execute();
+	                    } catch (Exception e) {	                         
+	                    }
+	                }
+	            });
+	        }
+	    };
+	    timer.schedule(doAsynchronousTask, 5000, 5000); //execute in every 5000 ms
 	}
 
 	private class MyAsyncTask extends AsyncTask<String, String, String> {
