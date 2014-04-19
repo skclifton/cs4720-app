@@ -1,3 +1,7 @@
+/*This is the activity that appears when the app is opened. It includes buttons 
+ * to start a new game or to join an existing game in your area
+ */
+
 package com.photointeering;
 
 import com.google.android.gms.common.ConnectionResult;
@@ -22,93 +26,94 @@ import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.Toast;
 
-
-public class MainActivity extends FragmentActivity implements 
-						GooglePlayServicesClient.ConnectionCallbacks, 
-						GooglePlayServicesClient.OnConnectionFailedListener {
+public class MainActivity extends FragmentActivity implements
+		GooglePlayServicesClient.ConnectionCallbacks,
+		GooglePlayServicesClient.OnConnectionFailedListener {
 
 	public final static String GPS_COORDS = "com.photointeering.COORDS";
-
 	private static final String DIALOG_ERROR = "dialog_error";
 	
+	// Declare and initialize the elements in the UI
 	Button newGameButton;
 	Button joinGameButton;
 	LocationClient mLocationClient;
 	Location mCurrentLocation;
-	
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
-		
+
 		newGameButton = (Button) findViewById(R.id.newGameButton);
-		
+
 		newGameButton.setOnClickListener(newGameButtonListener);
-		
+
 		joinGameButton = (Button) findViewById(R.id.joinGameButton);
-		
+
 		joinGameButton.setOnClickListener(joinGameButtonListener);
-		
+
 		mLocationClient = new LocationClient(this, this, this);
 	}
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		// Inflate the menu; this adds items to the action bar if it is present.
+		menu.add("Help");
 		getMenuInflater().inflate(R.menu.main, menu);
 		return true;
 	}
-	
+
 	public OnClickListener newGameButtonListener = new OnClickListener() {
 		public void onClick(View v) {
 			mCurrentLocation = mLocationClient.getLastLocation();
-			
+
 			double lat = 0.0;
 			double lon = 0.0;
-			
+
 			if (mCurrentLocation != null) {
 				Log.d("location", mCurrentLocation.toString());
 				lat = mCurrentLocation.getLatitude();
 				lon = mCurrentLocation.getLongitude();
 			}
-			
+
 			Intent intent = new Intent(MainActivity.this, GameMapActivity.class);
 			intent.putExtra("lat", lat);
 			intent.putExtra("lon", lon);
 			intent.putExtra("newGame", true);
-			
+
 			Log.d("tag", "click! " + lat + " " + lon);
-			
+
 			startActivity(intent);
 		}
-		
+
 	};
-	
+
 	public OnClickListener joinGameButtonListener = new OnClickListener() {
 		public void onClick(View v) {
 			mCurrentLocation = mLocationClient.getLastLocation();
-			
+
 			double lat = 0.0;
 			double lon = 0.0;
-			
+
 			if (mCurrentLocation != null) {
 				Log.d("location", mCurrentLocation.toString());
 				lat = mCurrentLocation.getLatitude();
 				lon = mCurrentLocation.getLongitude();
 			}
-			
-			Intent intent = new Intent(MainActivity.this, JoinGameActivity.class);
+
+			Intent intent = new Intent(MainActivity.this,
+					JoinGameActivity.class);
 			intent.putExtra("lat", lat);
 			intent.putExtra("lon", lon);
 			intent.putExtra("newGame", false);
-			
+
 			Log.d("tag", "click! " + lat + " " + lon);
-			
+
 			startActivity(intent);
 		}
-		
+
 	};
-	
+
 	protected void onStart() {
 		super.onStart();
 		if (this.servicesConnected()) {
@@ -175,7 +180,7 @@ public class MainActivity extends FragmentActivity implements
 			// Google Play services was not available for some reason
 		} else {
 			// Get the error code
-			int errorCode = resultCode; //connectionResult.getErrorCode();
+			int errorCode = resultCode; // connectionResult.getErrorCode();
 			// Get the error dialog from Google Play services
 			Dialog errorDialog = GooglePlayServicesUtil.getErrorDialog(
 					errorCode, this, CONNECTION_FAILURE_RESOLUTION_REQUEST);
@@ -193,7 +198,8 @@ public class MainActivity extends FragmentActivity implements
 			return false;
 		}
 	}
-//
+
+	//
 	public void onConnectionFailed(ConnectionResult connectionResult) {
 		if (connectionResult.hasResolution()) {
 			try {
@@ -216,7 +222,7 @@ public class MainActivity extends FragmentActivity implements
 			showErrorDialog(connectionResult.getErrorCode());
 		}
 	}
-	
+
 	private void showErrorDialog(int errorCode) {
 		// Create a fragment for the error dialog
 		ErrorDialogFragment dialogFragment = new ErrorDialogFragment();
@@ -226,22 +232,22 @@ public class MainActivity extends FragmentActivity implements
 		dialogFragment.setArguments(args);
 		dialogFragment.show(getSupportFragmentManager(), "errordialog");
 	}
-//
+
+	//
 	public void onConnected(Bundle dataBundle) {
 		Toast.makeText(this, "Connected", Toast.LENGTH_SHORT).show();
 
 	}
-//
+
+	//
 	public void onDisconnected() {
 		Toast.makeText(this, "Disconnected. Please re-connect.",
 				Toast.LENGTH_SHORT).show();
 	}
-	
-	
+
 	protected void onStop() {
 		mLocationClient.disconnect();
 		super.onStop();
 	}
 
 }
-

@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -69,7 +70,7 @@ public class GameMapActivity extends FragmentActivity implements
 	int IMAGE_WIDTH = 256;
 	int IMAGE_HEIGHT = 180;
 
-	double PHOTO_FOUND_DISTANCE = 0.05;
+	double PHOTO_FOUND_DISTANCE = 0.00005;
 
 	private static final String TAG = "PHOTO";
 
@@ -131,17 +132,32 @@ public class GameMapActivity extends FragmentActivity implements
 		String gpsCoords = intent.getStringExtra(MainActivity.GPS_COORDS);
 		boolean newGame = intent.getBooleanExtra("newGame", true);
 
-		getGameIDTask getGameID = new getGameIDTask();
-		getGameID.execute();
-		gameID = 0;
-		Log.d("gameID after getting from intent", String.valueOf(gameID));
+		Log.d("gameID after getting from getGameIDTask or from intent",
+				String.valueOf(gameID));
+
+		// Either begin a new game or join an existing game
 		String sendURL = "";
 
 		if (newGame) {
 			sendURL = newGameURL + currentLat + "/" + currentLon + "/"
 					+ getAccountName();
 		} else {
+			gameID = intent.getIntExtra("gameID", 0);
 			sendURL = joinGameURL + gameID + "/" + getAccountName();
+		}
+
+		new MyAsyncTask().execute(sendURL);
+
+		// If a new game was started, we must wait to get the game ID so that it
+		// is the most recent
+		if (newGame) {
+			gameID = 0;
+			getGameIDTask getGameID = new getGameIDTask();
+			try {
+				gameID = Integer.parseInt(getGameID.execute().get());
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
 		}
 
 		infoWindow = getLayoutInflater().inflate(R.layout.custom_info_window,
@@ -164,16 +180,17 @@ public class GameMapActivity extends FragmentActivity implements
 		// Zoom in, animating the camera.
 		map.animateCamera(CameraUpdateFactory.zoomTo(15), 2000, null);
 
+		TextView gameIDTV = (TextView) findViewById(R.id.gameActivityGameIDTextView);
+		gameIDTV.setText(String.valueOf(gameID));
+
 		TextView player = (TextView) findViewById(R.id.playerTextView);
 		player.setText(getAccountName());
 
 		TextView photosFound = (TextView) findViewById(R.id.photosFoundTextView);
 		photosFound.setText("0");
 
-		Log.d("gameIDasdfasdfasdf", String.valueOf(gameID));
 		getPlayers(gameID, newGame);
 
-		new MyAsyncTask().execute(sendURL);
 	}
 
 	public OnClickListener foundItButtonListener = new OnClickListener() {
@@ -371,7 +388,7 @@ public class GameMapActivity extends FragmentActivity implements
 				}
 
 			}
-			return null;
+			return String.valueOf(gameID);
 		}
 
 	}
