@@ -21,5 +21,7 @@
     <string name="longitude">longitude</string>
     <string name="found_it">Found it!</string>
     <string name="game_id_label">Game ID:</string>
-
+    <string name="point_not_found">Not quite there yet!</string>
+    <string name="keep_on_seeking">Keep on seeking!</string>
+    <string name="cancel">Cancel</string>
 </resources>

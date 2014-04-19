@@ -320,6 +320,7 @@ containing a value of this type.
         [CHAR LIMIT=70] 
          */
         public static final int auth_client_using_bad_version_title=0x7f060014;
+        public static final int cancel=0x7f060030;
         /**  Button in confirmation dialog to enable Google Play services.  Clicking it
         will direct user to application settings of Google Play services where they
         can enable it [CHAR LIMIT=40] 
@@ -400,6 +401,7 @@ containing a value of this type.
         public static final int joinGameLabel=0x7f060026;
         public static final int join_game_button=0x7f06001f;
         public static final int join_game_title=0x7f060025;
+        public static final int keep_on_seeking=0x7f06002f;
         public static final int latutude=0x7f06002a;
         public static final int loading=0x7f060027;
         public static final int longitude=0x7f06002b;
@@ -409,6 +411,7 @@ containing a value of this type.
         public static final int player=0x7f060028;
         public static final int player_label=0x7f060020;
         public static final int players_title=0x7f060024;
+        public static final int point_not_found=0x7f06002e;
     }
     public static final class style {
         /** 

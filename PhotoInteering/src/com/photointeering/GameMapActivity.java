@@ -40,8 +40,10 @@ import com.photointeering.MainActivity.ErrorDialogFragment;
 import android.accounts.Account;
 import android.accounts.AccountManager;
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentSender;
 import android.graphics.Bitmap;
@@ -70,7 +72,7 @@ public class GameMapActivity extends FragmentActivity implements
 	int IMAGE_WIDTH = 256;
 	int IMAGE_HEIGHT = 180;
 
-	double PHOTO_FOUND_DISTANCE = 0.00005;
+	double PHOTO_FOUND_DISTANCE = 0.005;
 
 	private static final String TAG = "PHOTO";
 
@@ -81,7 +83,8 @@ public class GameMapActivity extends FragmentActivity implements
 	ArrayList<Double> ret = new ArrayList<Double>();
 	ArrayList<Drawable> drawRet = new ArrayList<Drawable>();
 	ArrayList<String> playersAndScores = new ArrayList<String>();
-	ArrayList<Marker> mapMarkers = new ArrayList<Marker>();
+	ArrayList<Marker> unfoundMapMarkers = new ArrayList<Marker>();
+	ArrayList<Marker> foundMapMarkers = new ArrayList<Marker>();
 	private static final String DIALOG_ERROR = "dialog_error";
 
 	static final String KEY_PHOTO_URL = "url";
@@ -207,7 +210,11 @@ public class GameMapActivity extends FragmentActivity implements
 				lon = mCurrentLocation.getLongitude();
 			}
 
-			for (Marker m : mapMarkers) {
+			boolean displayWindow = true; // display the dialog box telling a
+											// user they didn't find the point
+			ArrayList<Marker> markersToRemove = new ArrayList<Marker>();
+			
+			for (Marker m : unfoundMapMarkers) {
 				double photoLat = m.getPosition().latitude;
 				double photoLon = m.getPosition().longitude;
 				boolean found = Math.abs(photoLat - lat) < PHOTO_FOUND_DISTANCE
@@ -224,13 +231,24 @@ public class GameMapActivity extends FragmentActivity implements
 
 					m.setIcon(BitmapDescriptorFactory
 							.defaultMarker(BitmapDescriptorFactory.HUE_GREEN));
-
+					
+					markersToRemove.add(m);
+					
 					new UpdateScoreTask().execute(sendURL);
-				} else {
-
+					displayWindow = false;
 				}
 			}
-
+			
+			for (Marker m : markersToRemove) {
+				foundMapMarkers.add(m);
+				unfoundMapMarkers.remove(m);
+			}
+			
+			if (displayWindow) {
+				PointNotFoundDialogFragment p = new PointNotFoundDialogFragment();
+				p.show((GameMapActivity.this).getSupportFragmentManager(),
+						"point not found dialog winidow");
+			}
 		}
 	};
 
@@ -605,7 +623,7 @@ public class GameMapActivity extends FragmentActivity implements
 								.position(photoPosition)
 								.icon(BitmapDescriptorFactory
 										.defaultMarker(BitmapDescriptorFactory.HUE_AZURE)));
-				mapMarkers.add(currentMark);
+				unfoundMapMarkers.add(currentMark);
 				images.put(currentMark, b);
 				// .icon(BitmapDescriptorFactory.fromBitmap(cS)));
 
