@@ -10,7 +10,7 @@
 *.class
 
 # generated files
-bin/
+PhotoInteering/bin/
 gen/
 
 # Local configuration file (sdk path, etc)
