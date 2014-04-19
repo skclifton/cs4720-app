@@ -194,6 +194,7 @@ public class GameMapActivity extends FragmentActivity implements
 		gameIDTV.setText(String.valueOf(gameID));
 
 		getPlayers(gameID, newGame);
+		callAsynchronousTask();
 
 	}
 
