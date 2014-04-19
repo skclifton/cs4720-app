@@ -9,6 +9,9 @@
 # Java class files
 *.class
 
+# google play services
+google-play-services_lib/
+
 # generated files
 PhotoInteering/bin/
 PhotoInteering/gen/
