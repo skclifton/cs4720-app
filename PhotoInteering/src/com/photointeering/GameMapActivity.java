@@ -104,6 +104,7 @@ public class GameMapActivity extends FragmentActivity implements
 	String getScoresURL = "http://plato.cs.virginia.edu/~cs4720s14asparagus/get_scores/";
 	String recentGameURL = "http://plato.cs.virginia.edu/~cs4720s14asparagus/get_recent_game/";
 	String updateScoreURL = "http://plato.cs.virginia.edu/~cs4720s14asparagus/update_score/";
+	String isOverURL = "http://plato.cs.virginia.edu/~cs4720s14asparagus/is_over/";
 
 	private TableLayout gamePlayersScrollView;
 
@@ -115,6 +116,8 @@ public class GameMapActivity extends FragmentActivity implements
 	LocationClient mLocationClient;
 	Location mCurrentLocation;
 	int gameID;
+	int numMarkers;
+	boolean gameWon = false;
 
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -175,9 +178,6 @@ public class GameMapActivity extends FragmentActivity implements
 		
 		TextView player = (TextView) findViewById(R.id.playerTextView);
 		player.setText(getAccountName());
-
-		TextView photosFound = (TextView) findViewById(R.id.photosFoundTextView);
-		photosFound.setText("0");
 		
 		new MyAsyncTask().execute(sendURL);
 
@@ -226,13 +226,8 @@ public class GameMapActivity extends FragmentActivity implements
 				boolean found = Math.abs(photoLat - lat) < PHOTO_FOUND_DISTANCE
 						&& Math.abs(photoLon - lon) < PHOTO_FOUND_DISTANCE;
 				if (found) {
-					TextView photosFound = (TextView) findViewById(R.id.photosFoundTextView);
-					int score = Integer.parseInt(photosFound.getText()
-							.toString());
-					score += 1;
-					photosFound.setText(String.valueOf(score));
 					String sendURL = updateScoreURL + gameID + "/"
-							+ getAccountName() + "/" + score;
+							+ getAccountName();
 					Log.d("gameID when updating score", String.valueOf(gameID));
 
 					m.setIcon(BitmapDescriptorFactory
@@ -252,12 +247,12 @@ public class GameMapActivity extends FragmentActivity implements
 			
 			if (unfoundMapMarkers.isEmpty()) {
 				YouWonDialogFragment y = new YouWonDialogFragment();
-				y.show((GameMapActivity.this).getSupportFragmentManager(), "you won dialog window");
+				y.show(getSupportFragmentManager(), "you won dialog window");
 			}
 			
 			if (displayWindow) {
 				PointNotFoundDialogFragment p = new PointNotFoundDialogFragment();
-				p.show((GameMapActivity.this).getSupportFragmentManager(),
+				p.show(getSupportFragmentManager(),
 						"point not found dialog winidow");
 			}
 		}
@@ -490,7 +485,14 @@ private class MyUpdatePlayersTask extends AsyncTask<String, String, String> {
 						jObject = jArray.getJSONObject(i);
 						user = jObject.getString("username");
 						score = jObject.getInt("score");
-
+						Log.d("number of markers", "numMarkers: " + numMarkers);
+						
+						if (score >= numMarkers && score > 7 && !gameWon) {
+							PlayerWonDialogFragment p = new PlayerWonDialogFragment();
+							p.show(getSupportFragmentManager(), "player won dialog fragment");	
+							gameWon = true;
+						}
+						
 						playersAndScores.add(user);
 						playersAndScores.add(Integer.toString(score));
 					} catch (JSONException e) {
@@ -660,16 +662,18 @@ private class MyUpdatePlayersTask extends AsyncTask<String, String, String> {
 
 				LatLng photoPosition = new LatLng(lat, lon);
 
-				Marker currentMark = map
+				Marker photoMark = map
 						.addMarker(new MarkerOptions()
 								.position(photoPosition)
 								.icon(BitmapDescriptorFactory
 										.defaultMarker(BitmapDescriptorFactory.HUE_AZURE)));
-				unfoundMapMarkers.add(currentMark);
-				images.put(currentMark, b);
+				unfoundMapMarkers.add(photoMark);
+				images.put(photoMark, b);
 				// .icon(BitmapDescriptorFactory.fromBitmap(cS)));
 
 			}
+			
+			numMarkers = unfoundMapMarkers.size();
 
 		}
 

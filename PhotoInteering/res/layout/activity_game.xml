@@ -58,30 +58,6 @@
         </TableRow>
 
         <TableRow
-            android:id="@+id/photosFound"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:padding="@dimen/pad10dp" >
-
-            <TextView
-                android:id="@+id/photosFoundLabelTextView"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:paddingRight="@dimen/pad10dp"
-                android:text="@string/photos_found_label"
-                android:textAppearance="?android:attr/textAppearanceLarge"
-                android:textColor="@color/gray" />
-
-            <TextView
-                android:id="@+id/photosFoundTextView"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/photos_found"
-                android:textAppearance="?android:attr/textAppearanceLarge"
-                android:textColor="@color/gray" />
-        </TableRow>
-
-        <TableRow
             android:layout_width="wrap_content"
             android:layout_height="1dp"
             android:background="@color/dark_cream"

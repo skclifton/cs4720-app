@@ -55,13 +55,6 @@ public class MainActivity extends FragmentActivity implements
 		mLocationClient = new LocationClient(this, this, this);
 	}
 
-	@Override
-	public boolean onCreateOptionsMenu(Menu menu) {
-		// Inflate the menu; this adds items to the action bar if it is present.
-		menu.add("Help");
-		getMenuInflater().inflate(R.menu.main, menu);
-		return true;
-	}
 
 	public OnClickListener newGameButtonListener = new OnClickListener() {
 		public void onClick(View v) {

@@ -3,11 +3,10 @@
     android:layout_width="fill_parent"
     android:layout_height="match_parent"
     android:background="@drawable/map"
-    android:paddingLeft="@dimen/pad300dp"
-    android:paddingRight="@dimen/pad300dp"
+    android:paddingLeft="@dimen/pad10dp"
+    android:paddingRight="@dimen/pad10dp"
     android:paddingTop="@dimen/pad20dp"
-    android:showDividers="beginning"
- >
+    android:showDividers="beginning" >
 
     <TableRow
         android:id="@+id/joinTableRowTitles"
